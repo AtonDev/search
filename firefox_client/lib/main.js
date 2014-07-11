@@ -18,6 +18,8 @@ var tab_indexes = {};
 
 // main
 
+
+//tool bar
 var previous = ui.ActionButton({
   id: "previous",
   label: "previous",
@@ -45,22 +47,36 @@ var toolbar = ui.Toolbar({
   items: [previous, next, search_frame]
 });
 
-
-
 function next_page() {
-  console.log("next_page clicked");
   tab_indexes[activeTab()] += 1;
   load_url(tab_urls[activeTab()][tab_indexes[activeTab()]], activeTab());
 };
 
 function previous_page() {
-  console.log("previous button clicked");
   tab_indexes[activeTab()] -= 1;
   load_url(tab_urls[activeTab()][tab_indexes[activeTab()]], activeTab());
 };
 
+//launch button
+var launch = ui.ActionButton({
+  id: "launch",
+  label: "launch",
+  icon: "./icons/forward-20.png",
+  onClick: launch_toolbar
+});
+
+function launch_toolbar() {
+  console.log('Launch toolbar clicked');
+};
+
+//main logic
+
+
+
+
 function getUrls(query, source) {
   query = query.split(' ').join('+');
+  //var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
   var url_ = "http://localhost:3000/s?search=" + query;
 
   var req = Request({
@@ -69,16 +85,17 @@ function getUrls(query, source) {
     onComplete: function(response) {
       handleResponse(response, activeTab())
     }
-  }).post();
+  }).get();
 
   //console.log("message source id: " + source.ownerID);
 };
 
 function handleResponse(response, source) {
   var urls = JSON.parse(response.text).urls;
+  console.log("urls ----------------- : " + urls.length);
   tab_urls[source] = urls;
   tab_indexes[source] = 0;
-  console.log("id of active tab is " + source);
+  //console.log("id of active tab is " + source);
   load_url(tab_urls[source][0], source);
 };
 
