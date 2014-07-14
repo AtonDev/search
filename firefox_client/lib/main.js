@@ -1,7 +1,7 @@
 // sdk modules
 var Request = require("sdk/request").Request;
-
 var tabs = require("sdk/tabs");
+var { Hotkey } = require("sdk/hotkeys");
 
 //var formData = require("sdk/FormData");
 
@@ -18,6 +18,20 @@ var tab_indexes = {};
 
 // main
 
+//hotkey
+
+var nextHotKey = Hotkey({
+  combo: "shift-Right",
+  onPress: function() {
+    next_page();
+  }
+});
+var previousHotKey = Hotkey({
+  combo: "shift-Left",
+  onPress: function() {
+    previous_page();
+  }
+});
 
 //tool bar
 var previous = ui.ActionButton({
@@ -43,7 +57,7 @@ var search_frame = ui.Frame({
 });
 
 var toolbar = ui.Toolbar({
-  title: "Player",
+  title: "Instant Search",
   items: [previous, next, search_frame]
 });
 
@@ -76,8 +90,8 @@ function launch_toolbar() {
 
 function getUrls(query, source) {
   query = query.split(' ').join('+');
-  //var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
-  var url_ = "http://localhost:3000/s?search=" + query;
+  var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
+  //var url_ = "http://localhost:3000/s?search=" + query;
 
   var req = Request({
     url: url_,
