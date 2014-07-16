@@ -110,9 +110,10 @@ function request_token() {
 function send_event(action_event) {
   tab = activeTab();
   params = {};
-  params["user_token"] = "U4jTTQOrfNu7gvq_RpaiJQ";
+  params["user_token"] = "5cQiaC-Tv5qR8tgd_EScvQ";
   params["query"] = tab_properties["query"]
   params["event"] = action_event;
+  params["browser"] = "firefox";
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
 
   //post request to send event
