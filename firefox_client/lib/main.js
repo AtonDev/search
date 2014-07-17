@@ -59,7 +59,7 @@ var search_frame = ui.Frame({
 
 var toolbar = ui.Toolbar({
   title: "Instant Search",
-  items: [previous, next, search_frame]
+  items: [search_frame, next]
 });
 
 function next_page() {

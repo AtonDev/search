@@ -1,9 +1,10 @@
 {
-  "name": "instant",
-  "title": "instant",
+  "name": "darwin",
+  "title": "Darwin",
   "id": "jid1-t4SkqBBFWGRs8A",
-  "description": "a basic add-on",
-  "author": "",
+  "description": "A new way to search the web",
+  "author": "APG",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1",
+  "icon": "data/icons/search-128.png"
 }
