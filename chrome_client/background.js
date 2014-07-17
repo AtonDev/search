@@ -37,10 +37,14 @@ function submitAnalytics(tabId, evt, query) {
   var nonce = Math.floor(Math.random() * Math.pow(2,31));
   var params = 'query=' + query + "&event=" + evt + "&browser=chrome" + "&nonce=" + nonce;
   xhr.open('POST', url, true);
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ // xhr.setRequestHeader("Content-length", params.length);
+ // xhr.setRequestHeader("Connection", "close");
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
         //success
+        console.log("RESPONSE: " + xhr.responseText);
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
   }
