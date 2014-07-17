@@ -55,6 +55,13 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   } 
 });
 
+chrome.tabs.onReplaced.addListener (function (newTabId, oldTabId) {
+  if (oldTabId in tabStates) {
+    console.log ("swapping tabStates");
+    tabStates[newTabId] = tabStates[oldTabId];
+  }
+});
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var id = sender.tab.id;
