@@ -104,8 +104,8 @@ function launch_toolbar() {
 //analytics
 
 function send_event(action_event) {
-  tab = activeTab();
-  params = {};
+  var tab = activeTab();
+  var params = {};
   //params["user_token"] = "5cQiaC-Tv5qR8tgd_EScvQ";
   params["query"] = tab_properties["query"]
   params["event"] = action_event;
@@ -115,7 +115,8 @@ function send_event(action_event) {
 
   //post request to send event
   var req = Request({
-    url: "http://custom-search.herokuapp.com/api/v1/is_event",
+    url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
+    //url: "http://localhost:3000/api/v1/is_event",
     content: params,
     onComplete: function(response) {
       console.log(response.text);
@@ -129,8 +130,8 @@ function send_event(action_event) {
 
 
 
-function getUrls(query, source) {
-  query = query.split(' ').join('+');
+function getUrls(query_, source) {
+  var query = query_.trim().split(' ').join('+');
   var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
   //var url_ = "http://localhost:3000/s?search=" + query;
 
