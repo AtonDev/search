@@ -1,7 +1,11 @@
 //window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
 window.addEventListener('load', function(evt) {
 	chrome.runtime.sendMessage({action: "loaded"}, function(response) {
-		console.log("response.query: " + response.query);
+	//	var nextPage = document.createElement('iframe');
+    //    nextPage.width = '0px';
+    //    nextPage.height = "0px";
+    //    nextPage.src = response.next;
+    //    document.body.insertBefore(nextPage, document.body.firstChild);
 		var query = response.query;
 		if (query != '') {
             document.getElementById('searchBox').value = response.query;
@@ -20,10 +24,6 @@ window.addEventListener('load', function(evt) {
     document.getElementById('removeToolbarBtn').addEventListener('click', function() {
 	    chrome.runtime.sendMessage({action: "removeToolbar"});
     })
-
-
-
-
 });
 
 

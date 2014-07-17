@@ -74,6 +74,7 @@ function removeToolbar() {
 }
 
 function getTabState() {
+	console.log(this + "calling tab state");
 	chrome.runtime.sendMessage({action: "getTabState"}, function(response) {
 		if (response.state == 'on') {
 			if (response.query == '') {
@@ -82,14 +83,22 @@ function getTabState() {
 			}else {
 				//load toolbar with next button
 				newIframe.src = chrome.extension.getURL("toolbar.html");
+				if (response.next != "none") {
+					var nextPage = document.createElement("link");
+					nextPage.rel = "prerender";
+					nextPage.href = response.next;
+					document.getElementsByTagName("head")[0].appendChild(nextPage);
+				}
 			}
-			document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
-			moveFixedElements(toolbarHeight);
-			document.body.insertBefore(newIframe, document.body.firstChild);
+		document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
+		moveFixedElements(toolbarHeight);
+		document.body.insertBefore(newIframe, document.body.firstChild);
 	    } 
 	});
 }
 
 function init() {
-	getTabState();
+	if (window == window.top) 
+	    getTabState();
+
 }
