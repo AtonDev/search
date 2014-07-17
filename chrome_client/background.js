@@ -15,25 +15,45 @@ function nextPage(id, dir) {
 
 
 function submitToServer(tabId, query) {
-  splitQuery = query.split(' ').join('+');
-  var url = "http://instantsearch.herokuapp.com/s?search=" + splitQuery;
-  console.log(url);
+  var url = "http://instantsearch.herokuapp.com/s?search=" + query;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
         var urls = JSON.parse(xhr.responseText).urls;
-        console.log(urls);
         tabStates[tabId].urls = urls; 
-        tabStates[tabId].idx = 0;
-        tabStates[tabId].query = query;
+        tabStates[tabId].idx = 0;      
         chrome.tabs.update(tabId, {url: urls[0]}); 
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
   }
   xhr.send();
 }
+
+function submitAnalytics(tabId, evt, query) {
+  var url = "http://custom-analytics.herokuapp.com/api/v1/is_event";
+  var xhr = new XMLHttpRequest();
+  var nonce = Math.floor(Math.random() * Math.pow(2,31));
+  var params = 'query=' + query + "&event=" + evt + "&browser=chrome" + "&nonce=" + nonce;
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ // xhr.setRequestHeader("Content-length", params.length);
+ // xhr.setRequestHeader("Connection", "close");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        //success
+        console.log("RESPONSE: " + xhr.responseText);
+      }else console.log("no 200 status");
+    }else console.log("readyState not 4 instead: " + xhr.readyState);      
+  }
+  xhr.send(params);
+}
+
+/*
+ * Event Listeners
+ */
 
 chrome.tabs.onCreated.addListener(function(tab) {
   var id = tab.id;
@@ -65,44 +85,52 @@ chrome.tabs.onReplaced.addListener (function (newTabId, oldTabId) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var id = sender.tab.id;
-    if (id in tabStates)
-    switch (request.action) {
-        case 'search':
-            submitToServer(id, request.query);           
-            break;
+    if (id in tabStates) {
+      var query = request.query; 
+      if (query) {
+        tabStates[id].query = query;
+        var query = query.split(' ').join('+');
+      }
+      switch (request.action) {
+          case 'search':
+              submitToServer(id, query);   
+              submitAnalytics(id, 'search', query);        
+              break;
 
-        case 'next':
-            nextPage(id, "forward"); 
-            break;
+          case 'next':
+              nextPage(id, "forward"); 
+              submitAnalytics(id, 'next', query);
+              break;
 
-        case 'loaded': //TODO add timeout if newtab's onCreated hasn't fired yet so tabState can be created first
-            console.log('received loaded message');
-            tabState = tabStates[id];
-            sendResponse({action: "populateSearchBox", query: tabStates[id].query});
-            break;
+          case 'loaded': //TODO add timeout if newtab's onCreated hasn't fired yet so tabState can be created first
+              console.log('received loaded message');
+              tabState = tabStates[id];
+              sendResponse({action: "populateSearchBox", query: tabStates[id].query});
+              break;
 
-        case 'removeToolbar':
-            console.log(id);
-            chrome.tabs.sendMessage(id, {action: "removeToolbar"});
-            tabStates[id].state = 'off';
-            tabStates[id].query = '';
-            break;
+          case 'removeToolbar':
+              console.log(id);
+              chrome.tabs.sendMessage(id, {action: "removeToolbar"});
+              tabStates[id].state = 'off';
+              tabStates[id].query = '';
+              break;
 
-        case 'getTabState':
-            var tabState = tabStates[id];
-            console.log("tabState :" + tabState);
-            console.log("getTabState id :" + id + "url: " + sender.tab.url);
-          
-            var next = "urls" in tabState ? tabState.urls[tabState.idx + 1] : "none";
-            sendResponse({state: tabState.state, query: tabState.query, next: next});
-            break;
+          case 'getTabState':
+              var tabState = tabStates[id];            
+              var next = "urls" in tabState ? tabState.urls[tabState.idx + 1] : "none";
+              sendResponse({state: tabState.state, query: tabState.query, next: next});
+              break;
 
-        case 'right':
-            nextPage(id, "forward");
-            break;
-        case 'left':
-            nextPage(id, "back");
-            break;
+          case 'right':
+              nextPage(id, "forward");
+              submitAnalytics(id, 'next', query);
+              break;
+
+          case 'left':
+              nextPage(id, "back");
+              submitAnalytics(id, 'previous', query);
+              break;
+       }
      }
   }
 );
