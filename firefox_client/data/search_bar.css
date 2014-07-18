@@ -3,6 +3,8 @@ body {
 }
 #search-form{
     display:inline;
+    width:100%;
+    white-space:nowrap;
 }
 
 input {
@@ -18,16 +20,17 @@ input {
     }
 
 #query-box {
-    width: 400px;
+    width: 44.7%;
+    max-width: 400px;
 }
-   
    
 input:hover, input:focus {
     border-color: #C9C9C9;
     }
    
 #submit-query-btn {
-    width: 100px;
+    width: 17.1%;
+    max-width: 152px;
     height: 24px;
     padding:4px 16px;
     background: #617798;

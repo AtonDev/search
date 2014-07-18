@@ -3,6 +3,8 @@ var current_query = "";
 
 var btn = window.document.getElementById("submit-query-btn");
 btn.addEventListener("click", submit);
+btn.addEventListener("mousedown", btn_mousedown);
+btn.addEventListener("mouseup", btn_mouseup);
 
 var query_box = window.document.getElementById("query-box");
 query_box.addEventListener("focus", searchEnvironment);
@@ -16,12 +18,14 @@ window.addEventListener("message", handleResponse, false);
 function submit() {
   switch(btn.value) {
     case "Search":
-      current_query = query_box.value;
-      window.parent.postMessage({
-        "type" : "search",
-        "query" : query_box.value
-      }, "*");
-      query_box.value = "";
+      if (query_box.value != "") {
+        current_query = query_box.value;
+        window.parent.postMessage({
+          "type" : "search",
+          "query" : query_box.value
+        }, "*");
+        query_box.value = "";
+      }
       break;
     case "Next":
       window.parent.postMessage({
@@ -31,6 +35,27 @@ function submit() {
   };
 }
 
+function btn_mouseup () {
+  switch(btn.value) {
+    case "Search":
+      btn.style.background = "#617798"
+      break;
+    case "Next":
+      btn.style.background = "#009933"
+      break;
+  }
+}
+
+function btn_mousedown () {
+  switch(btn.value) {
+    case "Search":
+      btn.style.background = "#576B89"
+      break;
+    case "Next":
+      btn.style.background = "#008A2E"
+      break;
+  };
+}
 
 function loses_focus() {
   if (current_query != "") {
