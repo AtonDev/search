@@ -149,34 +149,34 @@ function getUrls(query_, source) {
   //console.log("message source id: " + source.ownerID);
 };
 
-function handleResponse(response, source, query) {
+function handleResponse(response, tab, query) {
+  //console.log("active tab: " + tabs.activeTab);
+  //console.log("source is " + source);
   var urls = JSON.parse(response.text).urls;
-  //console.log("urls ----------------- : " + urls.length);
-
-  //tab_urls[source] = urls;
-  //tab_indexes[source] = 0;
-  //load_url(tab_urls[source][0], source);
-  //new
-  tab_properties[source] = {};
+  tab_properties[tab.id] = {};
   tab_properties["query"] = query;
-  tab_properties[source]["urls"] = urls;
-  tab_properties[source]["url_index"] = 0;
-  //console.log(tab_properties[source]["urls"])
-  //console.log("id of active tab is " + source);
-  load_url(tab_properties[source]["urls"][0], source);
+  tab_properties[tab.id]["urls"] = urls;
+  tab_properties[tab.id]["url_index"] = 0;
+  //console.log(tab_properties[tab.id]["urls"])
+  
+  load_url(tab_properties[tab.id]["urls"][0], tab);
 
   send_event("search");
 };
 
-function load_url(url, tabid) {
-  var tab = return_tab(tabid);
+function load_url(url, tab) {
   tab.url = url;
   tab.reload();
 };
 
 function return_tab(tab_id) {
-  for (tab in tabs) {
-    if (tab.id == tab_id) {
+
+  console.log("tabs: " + tabs);
+  for (tab_idx in tabs) {
+    var tab = tabs[tab_idx]
+    console.log("req id: " + tab_id);
+    console.log("tab id: " + tab.id);
+    if (tab.id== tab_id) {
       return tab;
     }
   };
@@ -204,7 +204,7 @@ function onOpen(tab) {
 
 function tabActivate(tab) {
   console.log(tab.id + " is active. --------------------------------------------------------------------------------------------------");
-  if (tab_properties.hasOwnProperty(tab.id) {
+  if (tab_properties.hasOwnProperty(tab.id)) {
     search_frame.postMessage({
       "type": "btn-change-search"
     }, search_frame.url);
