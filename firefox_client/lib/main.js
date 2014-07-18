@@ -14,9 +14,6 @@ var { Frame } = require("sdk/ui/frame");
 
 
 // global variables
-
-var tab_urls = {};
-var tab_indexes = {};
 var tab_properties = {};
 
 // main
@@ -65,19 +62,19 @@ var toolbar = ui.Toolbar({
 });
 
 function next_page() {
-  var tab = activeTab();
-  if (tab_properties.hasOwnProperty(tab)) {
-    tab_properties[tab]["url_index"] += 1;
-    load_url(tab_properties[tab]["urls"][tab_properties[tab].url_index], tab)
+  var tab = tabs.activeTab;
+  if (tab_properties.hasOwnProperty(tab.id)) {
+    tab_properties[tab.id]["url_index"] += 1;
+    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab.id)
   };
   send_event("next");
 };
 
 function previous_page() {
-  var tab = activeTab();
-  if (tab_properties.hasOwnProperty(tab)) {
-    tab_properties[tab].url_index -= 1;
-    load_url(tab_properties[tab]["urls"][tab_properties[tab].url_index], tab)
+  var tab = tabs.activeTab;
+  if (tab_properties.hasOwnProperty(tab.id)) {
+    tab_properties[tab.id]["url_index"] -= 1;
+    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab.id)
   };
   send_event("previous");
 };
@@ -98,10 +95,10 @@ function launch_toolbar() {
 //analytics
 
 function send_event(action_event) {
-  var tab = activeTab();
+  var tab = tabs.activeTab;
   var params = {};
   //params["user_token"] = "5cQiaC-Tv5qR8tgd_EScvQ";
-  params["query"] = tab_properties["query"]
+  params["query"] = tab_properties[tab.id]["query"]
   params["event"] = action_event;
   params["browser"] = "firefox";
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
@@ -146,7 +143,7 @@ function getUrls(query_, source) {
     url: url_,
     content: query,
     onComplete: function(response) {
-      handleResponse(response, activeTab(), query)
+      handleResponse(response, tabs.activeTab, query)
     }
   }).get();
   //console.log("message source id: " + source.ownerID);
@@ -172,7 +169,7 @@ function handleResponse(response, source, query) {
 };
 
 function load_url(url, tabid) {
-  var tab = tabs[tabid];
+  var tab = return_tab(tabid);
   tab.url = url;
   tab.reload();
 };
@@ -206,8 +203,8 @@ function onOpen(tab) {
 }
 
 function tabActivate(tab) {
-  console.log(tabID(tab) + " is active. --------------------------------------------------------------------------------------------------");
-  if (tab_properties.hasOwnProperty(tabID(tab))) {
+  console.log(tab.id + " is active. --------------------------------------------------------------------------------------------------");
+  if (tab_properties.hasOwnProperty(tab.id) {
     search_frame.postMessage({
       "type": "btn-change-search"
     }, search_frame.url);
