@@ -1,9 +1,9 @@
 {
-  "name": "darwin",
-  "title": "Darwin",
+  "name": "alts",
+  "title": "Alt-S",
   "id": "jid1-t4SkqBBFWGRs8A",
-  "description": "A new way to search the web",
-  "author": "",
+  "description": "An alternative way to search the we.",
+  "author": "APG",
   "license": "MPL 2.0",
   "version": "0.1",
   "icon": "data/icons/search-128.png"
