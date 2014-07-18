@@ -103,8 +103,8 @@ function send_event(action_event) {
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
   //post request to send event
   var req = Request({
-    //url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
-    url: "http://localhost:3000/api/v1/is_event",
+    url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
+    //url: "http://localhost:3000/api/v1/is_event",
     content: params,
     onComplete: function(response) {
       console.log(response.text);
