@@ -183,13 +183,7 @@ function return_tab(tab_id) {
   return null;
 };
 
-function activeTab() {
-  return tabID(tabs.activeTab);
-};
 
-function tabID(tab) {
-  return tab.id.split("-")[2] - 1;
-};
 
 tabs.on('open', onOpen);
 
