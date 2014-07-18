@@ -57,7 +57,7 @@ var search_frame = new ui.Frame({
 });
 
 var toolbar = ui.Toolbar({
-  title: "Instant Search",
+  title: "Alt-S",
   items: [search_frame]
 });
 
@@ -83,12 +83,16 @@ function previous_page() {
 /*var launch = ui.ActionButton({
   id: "launch",
   label: "launch",
-  icon: "./icons/forward-20.png",
+  icon: "./icons/search-128.png",
   onClick: launch_toolbar
 });
 
 function launch_toolbar() {
-  console.log('Launch toolbar clicked');
+  if (toolbar.hidden) {
+    toolbar.hidden = false;
+  } else {
+    toolbar.hidden = true;
+  };
 };*/
 
 
