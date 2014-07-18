@@ -16,6 +16,10 @@ input {
     -moz-box-shadow: rgba(0,0,0, 1) 0px 0px 8px;
     background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px); 
     }
+
+#query-box {
+    width: 400px;
+}
    
    
 input:hover, input:focus {
@@ -23,7 +27,7 @@ input:hover, input:focus {
     }
    
 #submit-query-btn {
-    width: auto;
+    width: 100px;
     height: 24px;
     padding:4px 16px;
     background: #617798;

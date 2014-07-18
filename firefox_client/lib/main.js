@@ -3,6 +3,8 @@ var Request = require("sdk/request").Request;
 var tabs = require("sdk/tabs");
 var { Hotkey } = require("sdk/hotkeys");
 
+
+
 //var formData = require("sdk/FormData");
 
 var ui = require("sdk/ui");
@@ -35,7 +37,7 @@ var previousHotKey = Hotkey({
 });
 
 //tool bar
-var previous = ui.ActionButton({
+/*var previous = ui.ActionButton({
   id: "previous",
   label: "previous",
   icon: "./icons/back-20.png",
@@ -47,26 +49,22 @@ var next = ui.ActionButton({
   label: "next",
   icon: "./icons/forward-20.png",
   onClick: next_page
-});
+});*/
 
 
-var search_frame = ui.Frame({
+var search_frame = new ui.Frame({
   url: "./search_frame.html",
   onMessage: (e) => {
-    getUrls(e.data, e.source);
+    handleFrameEvent(e);
   }
 });
 
 var toolbar = ui.Toolbar({
   title: "Instant Search",
-  items: [search_frame, next]
+  items: [search_frame]
 });
 
 function next_page() {
-  //tab_indexes[activeTab()] += 1;
-  //load_url(tab_urls[activeTab()][tab_indexes[activeTab()]], activeTab());
-
-  //new
   var tab = activeTab();
   if (tab_properties.hasOwnProperty(tab)) {
     tab_properties[tab]["url_index"] += 1;
@@ -76,10 +74,6 @@ function next_page() {
 };
 
 function previous_page() {
-  //tab_indexes[activeTab()] -= 1;
-  //load_url(tab_urls[activeTab()][tab_indexes[activeTab()]], activeTab());
-
-  //new
   var tab = activeTab();
   if (tab_properties.hasOwnProperty(tab)) {
     tab_properties[tab].url_index -= 1;
@@ -115,8 +109,8 @@ function send_event(action_event) {
 
   //post request to send event
   var req = Request({
-    url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
-    //url: "http://localhost:3000/api/v1/is_event",
+    //url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
+    url: "http://localhost:3000/api/v1/is_event",
     content: params,
     onComplete: function(response) {
       console.log(response.text);
@@ -127,7 +121,20 @@ function send_event(action_event) {
 
 //main logic
 
-
+function handleFrameEvent(message) {
+  switch(message.data.type){
+    case "search":
+      getUrls(message.data.query, message.source);
+      message.source.postMessage({
+        "type" : "btn-change-next",
+        "query": message.data.query
+      }, message.origin);
+      break;
+    case "next":
+      next_page();
+      break;
+  };
+};
 
 
 function getUrls(query_, source) {
@@ -168,11 +175,52 @@ function load_url(url, tabid) {
   var tab = tabs[tabid];
   tab.url = url;
   tab.reload();
-}
+};
+
+function return_tab(tab_id) {
+  for (tab in tabs) {
+    if (tab.id == tab_id) {
+      return tab;
+    }
+  };
+  return null;
+};
 
 function activeTab() {
-  return tabs.activeTab.id.split("-")[2] - 1;
+  return tabID(tabs.activeTab);
+};
+
+function tabID(tab) {
+  return tab.id.split("-")[2] - 1;
+};
+
+tabs.on('open', onOpen);
+
+function onOpen(tab) {
+  tab.on("activate", tabActivate);
+  console.log("tabs: " + tabs)
+  for (property in tabs[0]) {
+    console.log(property + "  :  " + tabs[0][property]);
+  };
+  //TODO: tab on close remove data about the tab
 }
+
+function tabActivate(tab) {
+  console.log(tabID(tab) + " is active. --------------------------------------------------------------------------------------------------");
+  if (tab_properties.hasOwnProperty(tabID(tab))) {
+    search_frame.postMessage({
+      "type": "btn-change-search"
+    }, search_frame.url);
+  } else {
+    search_frame.postMessage({
+      "type": "btn-change-next",
+      "query": tab_properties["query"]
+    }, search_frame.url);
+  }
+    
+}
+
+
 
 
 
