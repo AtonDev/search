@@ -40,6 +40,7 @@ function handleResponse (message) {
       break;
     case "btn-change-search":
       btn.value = "search";
+      query_box.placeholder = "Explore the web";
       btn.style.background = "#617798";
       break;
   };

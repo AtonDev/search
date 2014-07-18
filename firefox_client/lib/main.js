@@ -65,7 +65,7 @@ function next_page() {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] += 1;
-    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab.id)
+    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab)
   };
   send_event("next");
 };
@@ -74,7 +74,7 @@ function previous_page() {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] -= 1;
-    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab.id)
+    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab)
   };
   send_event("previous");
 };
@@ -97,13 +97,10 @@ function launch_toolbar() {
 function send_event(action_event) {
   var tab = tabs.activeTab;
   var params = {};
-  //params["user_token"] = "5cQiaC-Tv5qR8tgd_EScvQ";
   params["query"] = tab_properties[tab.id]["query"]
   params["event"] = action_event;
   params["browser"] = "firefox";
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
-  //params["random"] = "ole"
-
   //post request to send event
   var req = Request({
     //url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
@@ -137,27 +134,23 @@ function handleFrameEvent(message) {
 function getUrls(query_, source) {
   var query = query_.trim().split(' ').join('+');
   var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
-  //var url_ = "http://localhost:3000/s?search=" + query;
 
   var req = Request({
     url: url_,
     content: query,
     onComplete: function(response) {
-      handleResponse(response, tabs.activeTab, query)
+      console.log(response.text);
+      handleResponse(response, tabs.activeTab, query);
     }
   }).get();
-  //console.log("message source id: " + source.ownerID);
 };
 
 function handleResponse(response, tab, query) {
-  //console.log("active tab: " + tabs.activeTab);
-  //console.log("source is " + source);
   var urls = JSON.parse(response.text).urls;
   tab_properties[tab.id] = {};
-  tab_properties["query"] = query;
+  tab_properties[tab.id]["query"] = query;
   tab_properties[tab.id]["urls"] = urls;
   tab_properties[tab.id]["url_index"] = 0;
-  //console.log(tab_properties[tab.id]["urls"])
   
   load_url(tab_properties[tab.id]["urls"][0], tab);
 
@@ -170,12 +163,8 @@ function load_url(url, tab) {
 };
 
 function return_tab(tab_id) {
-
-  console.log("tabs: " + tabs);
   for (tab_idx in tabs) {
     var tab = tabs[tab_idx]
-    console.log("req id: " + tab_id);
-    console.log("tab id: " + tab.id);
     if (tab.id== tab_id) {
       return tab;
     }
@@ -189,26 +178,26 @@ tabs.on('open', onOpen);
 
 function onOpen(tab) {
   tab.on("activate", tabActivate);
-  console.log("tabs: " + tabs)
-  for (property in tabs[0]) {
-    console.log(property + "  :  " + tabs[0][property]);
+  tab.on("close", tabClose);
+}
+
+function tabClose(tab) {
+  if (tab_properties.hasOwnProperty(tab.id)) {
+    delete tab_properties[tab.id];
   };
-  //TODO: tab on close remove data about the tab
 }
 
 function tabActivate(tab) {
-  console.log(tab.id + " is active. --------------------------------------------------------------------------------------------------");
   if (tab_properties.hasOwnProperty(tab.id)) {
     search_frame.postMessage({
-      "type": "btn-change-search"
+      "type": "btn-change-next",
+      "query": tab_properties[tab.id]["query"]
     }, search_frame.url);
   } else {
     search_frame.postMessage({
-      "type": "btn-change-next",
-      "query": tab_properties["query"]
+      "type": "btn-change-search"
     }, search_frame.url);
-  }
-    
+  };
 }
 
 
