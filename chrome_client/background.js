@@ -38,8 +38,6 @@ function submitAnalytics(tabId, evt, query) {
   var params = 'query=' + query + "&event=" + evt + "&browser=chrome" + "&nonce=" + nonce;
   xhr.open('POST', url, true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
- // xhr.setRequestHeader("Content-length", params.length);
- // xhr.setRequestHeader("Connection", "close");
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
@@ -89,10 +87,10 @@ chrome.runtime.onMessage.addListener(
       var query = request.query; 
       if (query) {
         tabStates[id].query = query;
-        var query = query.split(' ').join('+');
       }
       switch (request.action) {
           case 'search':
+              console.log ('query: ' + query);
               submitToServer(id, query);   
               submitAnalytics(id, 'search', query);        
               break;
@@ -111,6 +109,7 @@ chrome.runtime.onMessage.addListener(
           case 'removeToolbar':
               console.log(id);
               chrome.tabs.sendMessage(id, {action: "removeToolbar"});
+              submitAnalytics(id, 'remove', query);
               tabStates[id].state = 'off';
               tabStates[id].query = '';
               break;
