@@ -15,7 +15,6 @@ query_box.addEventListener("keyup", autocomplete);
 window.addEventListener("message", handleResponse, false);
 
 
-
 function submit() {
   switch(btn.value) {
     case "Search":
@@ -86,6 +85,9 @@ function handleResponse (message) {
     case "btn-change-search":
       searchEnvironment();
       current_query = "";
+      break;
+    case "focus":
+      query_box.focus();
       break;
   };
 }

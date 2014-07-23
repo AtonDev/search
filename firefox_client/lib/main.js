@@ -29,6 +29,17 @@ var previousHotKey = Hotkey({
     previous_page();
   }
 });
+var altsKey = Hotkey({
+  combo: "alt-s",
+  onPress: function() {
+    //tabs.activeTab.attach({
+    //  contentScript: 'alert("hello")'
+    //});
+    search_frame.postMessage({
+      "type": "focus"
+    }, search_frame.url);
+  }
+});
 
 //tool bar
 /*var previous = ui.ActionButton({
