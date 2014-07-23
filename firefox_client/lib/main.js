@@ -3,8 +3,6 @@ var Request = require("sdk/request").Request;
 var tabs = require("sdk/tabs");
 var { Hotkey } = require("sdk/hotkeys");
 var data = require("sdk/self").data;
-
-
 //var formData = require("sdk/FormData");
 
 var ui = require("sdk/ui");

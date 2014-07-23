@@ -4,8 +4,9 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
+    <script src="https://yui-s.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
 
     <link href="http://code.jquery.com/ui/1.9.1/themes/smoothness/jquery-ui.css" rel="stylesheet"></link>
     <link rel="stylesheet" href="autocomplete.css">
@@ -18,23 +19,19 @@
       $(document).ready(function(){
         $("#input-ac").autocomplete({
           source: function(request, response) {
+            var yql_ac = 'https://query.yahooapis.com/v1/public/yql?q=select%20k%20from%20yahoo.search.suggestions%20where%20command%3D%22'+ request.term +'%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
             $.ajax({
-              url: "http://ff.search.yahoo.com/gossip",
-              dataType: "jsonp",
-              data: {
-                "output": "jsonp",
-                "command": request.term
-              },
+              url: yql_ac,
+              dataType: "json",              
               success: function(data) {
                 var suggestions = [];
                 var counter = 0;
                 // for each element in the data.gossip.results array ...
-                $.each(data.gossip.results, function(i, val) {
+                $.each(data.query.results.s, function(i, val) {
                   // .. push the value of the key inside our array
-                  suggestions.push(val.key);
-                  counter += 1;
+                  suggestions.push(val.k);
                   // dont display more than 5 results
-                  return counter < 5;
+                  return i < 4;
                 });
                 // call response with our collected values
                 response(suggestions);
