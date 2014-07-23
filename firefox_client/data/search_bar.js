@@ -10,6 +10,7 @@ var query_box = window.document.getElementById("query-box");
 query_box.addEventListener("focus", searchEnvironment);
 query_box.addEventListener("blur", loses_focus);
 query_box.addEventListener("change", searchEnvironment);
+query_box.addEventListener("keyup", autocomplete);
 
 window.addEventListener("message", handleResponse, false);
 
@@ -33,6 +34,20 @@ function submit() {
       }, "*");
       query_box.value = "";
   };
+}
+
+function autocomplete() {
+  var a = parseInt(window.document.getElementById("body-id").clientWidth);
+  var b = parseInt(window.document.getElementById("search-form").offsetWidth);
+  var q = query_box.value;
+  var width = parseInt(query_box.offsetWidth);
+  var pleft = (a - b)/2 + 8;
+  window.parent.postMessage({
+        "type" : "autocomplete",
+        "query": q,
+        "pwidth": width,
+        "pleft": pleft
+      }, "*");
 }
 
 function btn_mouseup () {

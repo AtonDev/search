@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
+
+    <link href="http://code.jquery.com/ui/1.9.1/themes/smoothness/jquery-ui.css" rel="stylesheet"></link>
+    <link rel="stylesheet" href="autocomplete.css">
+  </head>
+
+  <body>
+    <input type="hidden" id="input-ac" name="text" />
+    
+    <script>
+      $(document).ready(function(){
+        $("#input-ac").autocomplete({
+          source: function(request, response) {
+            $.ajax({
+              url: "http://ff.search.yahoo.com/gossip",
+              dataType: "jsonp",
+              data: {
+                "output": "jsonp",
+                "command": request.term
+              },
+              success: function(data) {
+                var suggestions = [];
+                // for each element in the data.gossip.results array ...
+                $.each(data.gossip.results, function(i, val) {
+                  // .. push the value of the key inside our array
+                  suggestions.push(val.key);
+                });
+                // call response with our collected values
+                response(suggestions);
+              }
+            });
+          }
+        });
+
+        $("#input-ac").bind('update_hidden_input', function (e) {
+          $("#input-ac").autocomplete("search", $("#input-ac").value);
+        });
+
+      });
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 var Request = require("sdk/request").Request;
 var tabs = require("sdk/tabs");
 var { Hotkey } = require("sdk/hotkeys");
-
+var data = require("sdk/self").data;
 
 
 //var formData = require("sdk/FormData");
@@ -11,8 +11,7 @@ var ui = require("sdk/ui");
 var { ActionButton } = require("sdk/ui/button/action");
 var { Toolbar } = require("sdk/ui/toolbar");
 var { Frame } = require("sdk/ui/frame");
-
-
+var panels = require("sdk/panel");
 // global variables
 var tab_properties = {};
 
@@ -47,7 +46,16 @@ var next = ui.ActionButton({
   icon: "./icons/forward-20.png",
   onClick: next_page
 });*/
-
+var autocomplete_panel = new panels.Panel({
+  position : {
+    top:0
+  },
+  width: 400,
+  height: 120,
+  contentScriptFile: data.url('autocomplete.js'),
+  contentURL: data.url("./autocomplete_box.html" ),
+  focus: false
+});
 
 var search_frame = new ui.Frame({
   url: "./search_frame.html",
@@ -122,6 +130,7 @@ function send_event(action_event) {
 function handleFrameEvent(message) {
   switch(message.data.type){
     case "search":
+      autocomplete_panel.hide();
       getUrls(message.data.query, message.source);
       message.source.postMessage({
         "type" : "btn-change-next",
@@ -131,6 +140,17 @@ function handleFrameEvent(message) {
     case "next":
       next_page();
       break;
+    case "autocomplete":
+      var q = message.data.query;
+      if (q != "") {
+        autocomplete_panel.width = parseInt(message.data.pwidth);
+        autocomplete_panel.position.left = parseInt(message.data.pleft);
+        autocomplete_panel.show();
+      } else {
+        autocomplete_panel.hide();
+      };
+      autocomplete_panel.port.emit('ac', q);
+    break;
   };
 };
 
