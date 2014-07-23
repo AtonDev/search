@@ -20,13 +20,13 @@ var tab_properties = {};
 //hotkey
 
 var nextHotKey = Hotkey({
-  combo: "shift-Right",
+  combo: "alt-Right",
   onPress: function() {
     next_page();
   }
 });
 var previousHotKey = Hotkey({
-  combo: "shift-Left",
+  combo: "alt-Left",
   onPress: function() {
     previous_page();
   }
