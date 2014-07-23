@@ -185,6 +185,13 @@ function load_url(idx, tab) {
   tab.reload();
 };
 
+tabs.on('ready', function(tab) {
+  worker = tab.attach({
+      contentScriptFile: data.url("prefetch.js")
+    });
+  var idx = tab_properties[tab.id].url_index;
+  worker.port.emit("link", tab_properties[tab.id]["urls"][idx+1]);
+});
 
 
 function return_tab(tab_id) {

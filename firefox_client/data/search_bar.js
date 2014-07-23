@@ -87,12 +87,6 @@ function handleResponse (message) {
       searchEnvironment();
       current_query = "";
       break;
-    case "prefetch-url":
-      var nextPage = window.document.createElement("link");
-      nextPage.rel = "prerender";
-      nextPage.href = message.data.next_url;
-      window.document.getElementsByTagName("head")[0].appendChild(nextPage);
-    break;
   };
 }
 
