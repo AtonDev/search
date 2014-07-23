@@ -71,7 +71,8 @@ function next_page() {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] += 1;
-    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab)
+    var idx = tab_properties[tab.id].url_index;
+    load_url(idx, tab);
   };
   send_event("next");
 };
@@ -80,7 +81,8 @@ function previous_page() {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] -= 1;
-    load_url(tab_properties[tab.id]["urls"][tab_properties[tab.id].url_index], tab)
+    var idx = tab_properties[tab.id].url_index;
+    load_url(idx, tab)
   };
   send_event("previous");
 };
@@ -161,7 +163,6 @@ function getUrls(query_, source) {
     url: url_,
     content: query,
     onComplete: function(response) {
-      console.log(response.text);
       handleResponse(response, tabs.activeTab, query);
     }
   }).get();
@@ -174,15 +175,17 @@ function handleResponse(response, tab, query) {
   tab_properties[tab.id]["urls"] = urls;
   tab_properties[tab.id]["url_index"] = 0;
   
-  load_url(tab_properties[tab.id]["urls"][0], tab);
+  load_url(0, tab);
 
   send_event("search");
 };
 
-function load_url(url, tab) {
-  tab.url = url;
+function load_url(idx, tab) {
+  tab.url = tab_properties[tab.id]["urls"][idx];
   tab.reload();
 };
+
+
 
 function return_tab(tab_id) {
   for (tab_idx in tabs) {
