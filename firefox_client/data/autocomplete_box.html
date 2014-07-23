@@ -27,10 +27,14 @@
               },
               success: function(data) {
                 var suggestions = [];
+                var counter = 0;
                 // for each element in the data.gossip.results array ...
                 $.each(data.gossip.results, function(i, val) {
                   // .. push the value of the key inside our array
                   suggestions.push(val.key);
+                  counter += 1;
+                  // dont display more than 5 results
+                  return counter < 5;
                 });
                 // call response with our collected values
                 response(suggestions);
