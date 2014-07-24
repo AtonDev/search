@@ -89,6 +89,11 @@ function handleResponse (message) {
     case "focus":
       query_box.focus();
       break;
+    case "ac_value":
+      query_box.value = message.data.val;
+      autocomplete();
+      searchEnvironment();
+      break;
   };
 }
 

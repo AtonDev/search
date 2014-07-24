@@ -121,6 +121,15 @@ function send_event(action_event) {
 
 //main logic
 
+autocomplete_panel.port.on("select_value", update_query_box);
+
+function update_query_box(message) {
+  search_frame.postMessage({
+      "type": "ac_value",
+      "val": message
+    }, search_frame.url);
+};
+
 function handleFrameEvent(message) {
   switch(message.data.type){
     case "search":
