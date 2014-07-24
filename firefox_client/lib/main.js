@@ -32,29 +32,12 @@ var previousHotKey = Hotkey({
 var altsKey = Hotkey({
   combo: "alt-s",
   onPress: function() {
-    //tabs.activeTab.attach({
-    //  contentScript: 'alert("hello")'
-    //});
     search_frame.postMessage({
       "type": "focus"
     }, search_frame.url);
   }
 });
 
-//tool bar
-/*var previous = ui.ActionButton({
-  id: "previous",
-  label: "previous",
-  icon: "./icons/back-20.png",
-  onClick: previous_page
-});
-
-var next = ui.ActionButton({
-  id: "next",
-  label: "next",
-  icon: "./icons/forward-20.png",
-  onClick: next_page
-});*/
 var autocomplete_panel = new panels.Panel({
   position : {
     top:0
@@ -185,9 +168,12 @@ function handleResponse(response, tab, query) {
   tab_properties[tab.id]["query"] = query;
   tab_properties[tab.id]["urls"] = urls;
   tab_properties[tab.id]["url_index"] = 0;
-  
-  load_url(0, tab);
-
+  if (urls.length > 0) {
+    load_url(0, tab);
+  } else {
+    tab.url = data.url("no_matches.html");
+    tab.reload();
+  };
   send_event("search");
 };
 
