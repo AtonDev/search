@@ -86,8 +86,8 @@ function handleResponse (message) {
       nextEnvironment(message.data.query);
       break;
     case "btn-change-search":
-      searchEnvironment();
       current_query = "";
+      searchEnvironment();
       break;
     case "focus":
       query_box.focus();
