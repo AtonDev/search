@@ -240,6 +240,7 @@ function tabActivate(tab) {
       "type": "btn-change-next",
       "query": tab_properties[tab.id]["query"]
     }, search_frame.url);
+    console.log(tab_properties[tab.id]);
   } else {
     search_frame.postMessage({
       "type": "btn-change-search"

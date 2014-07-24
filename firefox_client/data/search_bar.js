@@ -1,6 +1,5 @@
 var current_query = "";
 
-
 var btn = window.document.getElementById("submit-query-btn");
 btn.addEventListener("click", submit);
 btn.addEventListener("mousedown", btn_mousedown);
@@ -11,6 +10,7 @@ query_box.addEventListener("focus", searchEnvironment);
 query_box.addEventListener("blur", loses_focus);
 query_box.addEventListener("change", searchEnvironment);
 query_box.addEventListener("keyup", autocomplete);
+
 
 window.addEventListener("message", handleResponse, false);
 
@@ -105,10 +105,10 @@ function searchEnvironment() {
 }
 
 function nextEnvironment(query) {
+  current_query = query;
   btn.value = "Next";
   btn.style.background = "#009933";
   query_box.placeholder = "query: " + query;
-  current_query = query;
 }
 
 
