@@ -7,10 +7,9 @@ btn.addEventListener("mouseup", btn_mouseup);
 
 var query_box = window.document.getElementById("query-box");
 query_box.addEventListener("focus", searchEnvironment);
-//query_box.addEventListener("blur", loses_focus);
 query_box.addEventListener("change", searchEnvironment);
 query_box.addEventListener("keyup", autocomplete);
-query_box.addEventListener("keydown", searchEnvironment);
+//query_box.addEventListener("keydown", searchEnvironment);
 
 var form = window.document.getElementById("search-form");
 form.addEventListener("blur", loses_focus);
@@ -39,6 +38,7 @@ function submit() {
 }
 
 function autocomplete() {
+  searchEnvironment();
   var a = parseInt(window.document.getElementById("body-id").clientWidth);
   var b = parseInt(window.document.getElementById("search-form").offsetWidth);
   var q = query_box.value;
@@ -102,9 +102,13 @@ function handleResponse (message) {
 }
 
 function searchEnvironment() {
-  btn.value = "Search";
-  query_box.placeholder = "Explore the web";
-  btn.style.background = "#617798";
+  if (query_box.value == "" && current_query != "") {
+    nextEnvironment(current_query);
+  } else {
+    btn.value = "Search";
+    query_box.placeholder = "Explore the web";
+    btn.style.background = "#617798";
+  };
 }
 
 function nextEnvironment(query) {
