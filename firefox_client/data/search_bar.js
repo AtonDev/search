@@ -93,6 +93,7 @@ function handleResponse (message) {
       query_box.value = message.data.val;
       autocomplete();
       searchEnvironment();
+      query_box.focus();
       break;
   };
 }
