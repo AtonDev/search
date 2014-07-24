@@ -1,0 +1,22 @@
+body {
+    margin:0px;
+}
+
+#searchFormDiv {
+    width: 600px;
+    height: 40px;
+    background: #195695;
+}
+
+#searchBox {
+    height: 30px;
+    width: 590px;
+    margin-left: 2px;
+    margin-top: 2px;
+    font-size: 1em;
+}
+
+.ui-widget {
+    font-family: arial !important;
+    font-size: 1em !important;
+}
