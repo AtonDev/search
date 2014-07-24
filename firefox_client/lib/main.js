@@ -222,6 +222,7 @@ function return_tab(tab_id) {
 
 
 tabs.on('open', onOpen);
+tabs.on('ready', onOpen);
 
 function onOpen(tab) {
   tab.on("activate", tabActivate);
@@ -240,7 +241,6 @@ function tabActivate(tab) {
       "type": "btn-change-next",
       "query": tab_properties[tab.id]["query"]
     }, search_frame.url);
-    console.log(tab_properties[tab.id]);
   } else {
     search_frame.postMessage({
       "type": "btn-change-search"

@@ -5,6 +5,3 @@ self.port.on("link", function(url) {
   document.getElementsByTagName("head")[0].appendChild(nextPage);
 });
 
-self.port.on("no_results", function(m) {
-  alert("No results were found for you query");
-})
