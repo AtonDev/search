@@ -26,6 +26,7 @@
               success: function(data) {
                 var suggestions = [];
                 var counter = 0;
+                if (data.query.results == null) {return;};
                 // for each element in the data.gossip.results array ...
                 $.each(data.query.results.s, function(i, val) {
                   // .. push the value of the key inside our array
