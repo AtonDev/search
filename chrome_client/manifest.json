@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Instant Search",
-  "description": "This extension allows you to uniquely search the web.",
+  "name": "Alt S",
+  "description": "An alternative way to search the web.",
   "version": "0.1",
 
   "permissions": [
@@ -15,7 +15,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content_script.js"]
+      "js": ["headroom.js", "jquery-1.11.1.min.js", "content_script.js"],
+      "run_at": "document_start"
     }
   ],
 
@@ -24,12 +25,22 @@
   },
 
   "browser_action": {
-    "default_icon": "icon.png"
+    "default_icon": "icon.png",
+    "default_popup": "toolbarInitial.html"
   },
 
   "web_accessible_resources": [
     "css/*.css",
     "toolbar.html",
-    "toolbarInitial.html"
-  ]
+    "toolbarInitial.html",
+    "autocomplete.html"
+  ],
+
+  "omnibox": { "keyword" : "ß" },
+
+  "commands": {
+    "_execute_browser_action" : {
+      "suggested_key": { "default": "Alt+S" }
+    }
+  }
 }

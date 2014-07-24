@@ -124,9 +124,10 @@ textarea {
 #searchFormDivInitial {
     position: fixed;
     margin-top: 2px;
-    left: 50%;
+    left: 49%;
+
     background: #195695;
-    width: 50%;
+    width: 97%;
     max-width: 600px;
     z-index: 1;
 }
@@ -168,6 +169,11 @@ textarea {
 .innerButton {
     position:relative;
     top: -2px;
+}
+
+.ui-widget {
+    font-family: arial !important;
+    font-size: 1em !important;
 }
 
 .nextBtn {
