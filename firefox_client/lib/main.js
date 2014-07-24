@@ -132,6 +132,9 @@ function send_event(action_event) {
 //main logic
 
 autocomplete_panel.port.on("select_value", update_query_box);
+autocomplete_panel.port.on("no_ac_results", function() {
+  autocomplete_panel.hide();
+});
 
 function update_query_box(message) {
   search_frame.postMessage({

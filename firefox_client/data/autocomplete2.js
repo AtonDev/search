@@ -7,8 +7,10 @@ $(document).ready(function(){
         dataType: "json",              
         success: function(data) {
           var suggestions = [];
-          var counter = 0;
-          if (data.query.results == null) {return;};
+          if (data.query.results == null) {
+            var elem = document.getElementById('input-ac');
+            elem.dispatchEvent(new Event('no_results'));
+          };
           // for each element in the data.gossip.results array ...
           $.each(data.query.results.s, function(i, val) {
             // .. push the value of the key inside our array
