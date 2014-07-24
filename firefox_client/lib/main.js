@@ -38,6 +38,16 @@ var altsKey = Hotkey({
   }
 });
 
+var alert_panel = new panels.Panel({
+  position : {
+    top:0
+  },
+  width: 400,
+  height: 40,
+  contentURL: data.url("alert.html" ),
+  focus: false
+});
+
 var autocomplete_panel = new panels.Panel({
   position : {
     top:0
@@ -180,8 +190,7 @@ function handleResponse(response, tab, query) {
   if (urls.length > 0) {
     load_url(0, tab);
   } else {
-    tab.url = data.url("no_matches.html");
-    tab.reload();
+    alert_panel.show();
   };
   send_event("search");
 };
