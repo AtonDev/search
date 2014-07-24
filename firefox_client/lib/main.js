@@ -172,7 +172,7 @@ function handleFrameEvent(message) {
 
 
 function getUrls(query_, source) {
-  var query = query_.trim().split(' ').join('+');
+  var query = query_.trim();
   var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
 
   var req = Request({
