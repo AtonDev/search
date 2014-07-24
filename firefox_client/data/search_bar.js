@@ -7,11 +7,13 @@ btn.addEventListener("mouseup", btn_mouseup);
 
 var query_box = window.document.getElementById("query-box");
 query_box.addEventListener("focus", searchEnvironment);
-query_box.addEventListener("blur", loses_focus);
+//query_box.addEventListener("blur", loses_focus);
 query_box.addEventListener("change", searchEnvironment);
 query_box.addEventListener("keyup", autocomplete);
 query_box.addEventListener("keydown", searchEnvironment);
 
+var form = window.document.getElementById("search-form");
+form.addEventListener("blur", loses_focus);
 
 window.addEventListener("message", handleResponse, false);
 
