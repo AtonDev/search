@@ -53,7 +53,7 @@ var autocomplete_panel = new panels.Panel({
     top:0
   },
   width: 400,
-  height: 120,
+  height: 112,
   contentScriptFile: data.url('autocomplete.js'),
   contentURL: data.url("./autocomplete_box.html" ),
   focus: false
