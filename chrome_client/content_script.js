@@ -19,8 +19,7 @@ var firstTime = true;
 
 makeSpace(timeout);
 $(document).ready(function() { 
-//	console.log ('moveFixedElements called on DOM ready');
-    moveFixedElements(toolbarHeight); 		
+//	console.log ('moveFixedElements called on DOM ready');		
 	init();
 });
 
@@ -122,17 +121,36 @@ function getTabState() {
 }
 
 function init() {
-	if (window == window.top) {
-		getTabState();
-		initializeHeadroom('div');
-		initializeHeadroom('header');
-	}
+	//	getTabState();
+	document.body.style.position = "relative"; 
+	newIframe.src = chrome.extension.getURL("toolbar.html");
+	document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
+//		console.log("moveFixedElements in getTabState");
+	moveFixedElements(toolbarHeight);
+	document.body.insertBefore(newIframe, document.body.firstChild);
+	window.setTimeout(function() {
+		var placeHolderDiv = document.getElementById('placeHolderDiv');
+	    placeHolderDiv.parentNode.removeChild(placeHolderDiv);
+	}, 1000);
+	
+	chrome.runtime.sendMessage({action: "getNext"}, function(response) {
+		if (response.next != "none") {
+			var nextPage = document.createElement("link");
+			nextPage.rel = "prerender";
+			nextPage.href = response.next;
+			document.getElementsByTagName("head")[0].appendChild(nextPage);
+		}
+	});
+	var headroom = new Headroom(newIframe);
+	headroom.init();
+	initializeHeadroom('div');
+	initializeHeadroom('header');
 }
 
 
 
 
-//create space above body
+//create space above body before dom ready has fired
 function makeSpace(wait) {
 	//console.log('MAKESPACE() CALLED');
 	if (firstTime) {

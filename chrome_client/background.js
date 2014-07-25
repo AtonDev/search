@@ -1,6 +1,5 @@
 var tabStates = {};
 
-
 function resizeToolbar(size) {
   chrome.tabs.sendMessage(id, {action: "resizeToolbar", size: size});
 }
@@ -60,16 +59,16 @@ function executeSearch(id, query) {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       id = tabs[0].id;
       initializeTab(id); 
-      tabStates[id].query = query;
-      submitToServer(id, query);   
-      submitAnalytics(id, 'search', query);
+      searchHelper(id, query); //inside callback so we know the id before calling searchHelper()
     });
-  }else {
-    tabStates[id].query = query;
-    submitToServer(id, query);   
-    submitAnalytics(id, 'search', query);
-  }
-  
+  }else 
+    searchHelper(id, query);
+}
+
+function searchHelper(id, query) {
+  tabStates[id].query = query;
+  submitToServer(id, query);   
+  submitAnalytics(id, 'search', query);
 }
 
 function initializeTab(id) {
@@ -77,11 +76,6 @@ function initializeTab(id) {
   tabStates[id].state = 'on';
   tabStates[id].query = '';
 }
-
-
-//var details = new Object();
-//details.popup = 'noShow.html';
-//chrome.browserAction.setPopup(details);
 
 function togglePopup(wndw) {
    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
@@ -124,25 +118,20 @@ chrome.omnibox.onInputEntered.addListener(function (text, disposition) {
   });
 });
 
-chrome.tabs.onCreated.addListener(function(tab) {
-  var id = tab.id;
-  tabStates[id] = {};
-  tabStates[id].state = 'on';
-  tabStates[id].query = '';
-  console.log('tab created');
-});
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (tabId in tabStates && changeInfo.status == 'loading') {
+    var injectDetails = new Object();
+    injectDetails.runAt = "document_start";
 
-chrome.browserAction.onClicked.addListener(function(tab) {  // does not fire since we have a popup that opens on browser action click
-  var id = tab.id;
-  var idExists = id in tabStates;
-  console.log("browser action detected");
-  if(!idExists || tabStates[id].state == 'off') {
-    initializeTab;
-    chrome.tabs.sendMessage(id, {action: "loadToolbar"});
-    console.log('loadToolbar message sent');
-  } 
-  chrome.tabs.sendMessage(id, {action: "removePopup"});
-  console.log('removePopup message sent');
+    injectDetails.file = 'headroom.js';
+    chrome.tabs.executeScript(tabId, injectDetails);
+
+    injectDetails.file = 'jquery-1.11.1.min.js';
+    chrome.tabs.executeScript(tabId, injectDetails);
+
+    injectDetails.file = 'content_script.js';
+    chrome.tabs.executeScript(tabId, injectDetails);
+  }
 });
 
 chrome.tabs.onReplaced.addListener (function (newTabId, oldTabId) {
@@ -150,6 +139,7 @@ chrome.tabs.onReplaced.addListener (function (newTabId, oldTabId) {
   if (oldTabId in tabStates) {
     console.log ("swapping tabStates");
     tabStates[newTabId] = tabStates[oldTabId];
+    delete tabStates[oldTabId];
   }
 });
 
@@ -161,10 +151,6 @@ chrome.runtime.onMessage.addListener(
       id = sender.tab.id;
     if (id in tabStates) {
       var tabState = tabStates[id];
- //     var query = request.query; 
- //     if (query) {
- //       tabStates[id].query = query;
- //     }else query = tabStates[id].query;
       switch (request.action) {
           case 'search':
               //console.log ('query: ' + query);
@@ -184,14 +170,13 @@ chrome.runtime.onMessage.addListener(
           case 'removeToolbar':
               chrome.tabs.sendMessage(id, {action: "removeToolbar"});
               submitAnalytics(id, 'remove', tabState.query);
-              tabStates[id].state = 'off';
-              tabStates[id].query = '';
+              delete tabStates[id];
               break;
 
-          case 'getTabState':            
+          case 'getNext':            
               var next = "urls" in tabState ? tabState.urls[tabState.idx + 1] : "none";
-              sendResponse({state: tabState.state, query: tabState.query, next: next});
-              console.log('in getTabState tab id = ' + id);
+              sendResponse({next: next});
+          //    console.log('in getTabState tab id = ' + id);
               break;
 
           case 'right':
