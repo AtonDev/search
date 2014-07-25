@@ -14,4 +14,3 @@ self.port.on("link", function(url) {
   meta.content = "<" + url + ">; rel=prefetch";
   document.getElementsByTagName("head")[0].appendChild(meta);
 });
-
