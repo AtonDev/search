@@ -4,6 +4,8 @@ var btn = window.document.getElementById("submit-query-btn");
 btn.addEventListener("click", submit);
 btn.addEventListener("mousedown", btn_mousedown);
 btn.addEventListener("mouseup", btn_mouseup);
+btn.addEventListener("mouseenter", btn_mouseenter);
+btn.addEventListener("mouseleave", btn_mouseleave);
 
 var query_box = window.document.getElementById("query-box");
 query_box.addEventListener("focus", searchEnvironment);
@@ -52,6 +54,28 @@ function autocomplete() {
       }, "*");
 }
 
+function btn_mouseleave () {
+  switch(btn.value) {
+    case "Search":
+      btn.style.background = "#617798"
+      break;
+    case "Next":
+      btn.style.background = "#009933"
+      break;
+  }
+}
+
+function btn_mouseenter () {
+  switch(btn.value) {
+    case "Search":
+      btn.style.background = "#576B89"
+      break;
+    case "Next":
+      btn.style.background = "#008A2E"
+      break;
+  };
+}
+
 function btn_mouseup () {
   switch(btn.value) {
     case "Search":
@@ -66,10 +90,10 @@ function btn_mouseup () {
 function btn_mousedown () {
   switch(btn.value) {
     case "Search":
-      btn.style.background = "#576B89"
+      btn.style.background = "#50627D"
       break;
     case "Next":
-      btn.style.background = "#008A2E"
+      btn.style.background = "#007527"
       break;
   };
 }
