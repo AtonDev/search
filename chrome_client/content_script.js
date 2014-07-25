@@ -199,9 +199,9 @@ function makeSpace(wait) {
 
 
 
-document.onkeydown = checkKeyPress;
-function checkKeyPress(e) {
-  e = e || window.event;
+//document.onkeydown = checkKeyPress;
+//function checkKeyPress(e) {
+//  e = e || window.event;
 //  if (e.keyCode == 16) {
 //  	cntrl = true;
 //  } 
@@ -213,28 +213,28 @@ function checkKeyPress(e) {
 //  	newIframe.style.display = "block";
 //  	newIframe.contentWindow.focus();
 //  }
-  if (e.keyCode == 39) {
+//  if (e.keyCode == 39) {
   //right arrow pressed
-    chrome.runtime.sendMessage({action: "right"});
-  }else if (e.keyCode == 37) {
+//    chrome.runtime.sendMessage({action: "right"});
+//  }else if (e.keyCode == 37) {
   //left arrow pressed
-    chrome.runtime.sendMessage({action: "left"});
-  }
-}
+//    chrome.runtime.sendMessage({action: "left"});
+//  }
+//}
 
-document.onkeyup = upKeyPress;
-function upKeyPress(e) {
- e = e || window.event;
-  if (cntrl && s) {
-  	newIframe.style.display = "block";
+//document.onkeyup = upKeyPress;
+//function upKeyPress(e) {
+// e = e || window.event;
+//  if (cntrl && s) {
+//  	newIframe.style.display = "block";
   	//document.getElementById('searchBox').focus();
-  }
+//  }
 //  if (e.keyCode == 17) {
 //  	cntrl = false;
 //  } 
 //  if (e.keyCode == 83) {
 //  	s = false;
 //  }
-}
+//}
 
 

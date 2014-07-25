@@ -4,7 +4,7 @@ function resizeToolbar(size) {
   chrome.tabs.sendMessage(id, {action: "resizeToolbar", size: size});
 }
 
-function nextPage(id, dir) {
+function movePage(id, dir) {
   var tabState = tabStates[id];
   var idx = tabState.idx;
   var newIndex;
@@ -143,6 +143,20 @@ chrome.tabs.onReplaced.addListener (function (newTabId, oldTabId) {
   }
 });
 
+chrome.commands.onCommand.addListener(function(command) {
+  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+    if (command == "nextPage") {
+      var id = tabs[0].id;
+      movePage(id, "forward"); 
+      submitAnalytics(id, 'next', tabStates[id].query);
+    }else if (command == "prevPage") {
+      var id = tabs[0].id;
+      movePage(id, "back"); 
+      submitAnalytics(id, 'previous', tabStates[id].query);
+    }
+  });
+});
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var tab = sender.tab;
@@ -159,7 +173,7 @@ chrome.runtime.onMessage.addListener(
 
           case 'next':
               //console.log("next, query: " + query);
-              nextPage(id, "forward"); 
+              movePage(id, "forward"); 
               submitAnalytics(id, 'next', tabState.query);
               break;
 
@@ -180,12 +194,12 @@ chrome.runtime.onMessage.addListener(
               break;
 
           case 'right':
-              nextPage(id, "forward");
+              movePage(id, "forward");
               submitAnalytics(id, 'next', tabState.query);
               break;
 
           case 'left':
-              nextPage(id, "back");
+              movePage(id, "back");
               submitAnalytics(id, 'previous', tabState.query);
               break;
 
