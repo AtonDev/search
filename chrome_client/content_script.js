@@ -1,381 +1,9 @@
-/*!
- * headroom.js v0.6.0 - Give your page some headroom. Hide your header until you need it
- * Copyright (c) 2014 Nick Williams - http://wicky.nillia.ms/headroom.js
- * License: MIT
- */
-
-(function(window, document) {
-
-  'use strict';
-
-  /* exported features */
-  
-  var features = {
-    bind : !!(function(){}.bind),
-    classList : 'classList' in document.documentElement,
-    rAF : !!(window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame)
-  };
-  window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
-  
-  /**
-   * Handles debouncing of events via requestAnimationFrame
-   * @see http://www.html5rocks.com/en/tutorials/speed/animations/
-   * @param {Function} callback The callback to handle whichever event
-   */
-  function Debouncer (callback) {
-    this.callback = callback;
-    this.ticking = false;
-  }
-  Debouncer.prototype = {
-    constructor : Debouncer,
-  
-    /**
-     * dispatches the event to the supplied callback
-     * @private
-     */
-    update : function() {
-      this.callback && this.callback();
-      this.ticking = false;
-    },
-  
-    /**
-     * ensures events don't get stacked
-     * @private
-     */
-    requestTick : function() {
-      if(!this.ticking) {
-        requestAnimationFrame(this.rafCallback || (this.rafCallback = this.update.bind(this)));
-        this.ticking = true;
-      }
-    },
-  
-    /**
-     * Attach this as the event listeners
-     */
-    handleEvent : function() {
-      this.requestTick();
-    }
-  };
-  /**
-   * Helper function for extending objects
-   */
-  function extend (object /*, objectN ... */) {
-    if(arguments.length <= 0) {
-      throw new Error('Missing arguments in extend function');
-    }
-  
-    var result = object || {},
-        key,
-        i;
-  
-    for (i = 1; i < arguments.length; i++) {
-      var replacement = arguments[i] || {};
-  
-      for (key in replacement) {
-        if(typeof result[key] === 'object') {
-          result[key] = extend(result[key], replacement[key]);
-        }
-        else {
-          result[key] = result[key] || replacement[key];
-        }
-      }
-    }
-  
-    return result;
-  }
-  
-  /**
-   * Helper function for normalizing tolerance option to object format
-   */
-  function normalizeTolerance (t) {
-    return t === Object(t) ? t : { down : t, up : t };
-  }
-  
-  /**
-   * UI enhancement for fixed headers.
-   * Hides header when scrolling down
-   * Shows header when scrolling up
-   * @constructor
-   * @param {DOMElement} elem the header element
-   * @param {Object} options options for the widget
-   */
-  function Headroom (elem, options) {
-    options = extend(options, Headroom.options);
-    console.log("Headroom() called");
-    this.lastKnownScrollY = 0;
-    this.elem             = elem;
-    this.debouncer        = new Debouncer(this.update.bind(this));
-    this.tolerance        = normalizeTolerance(options.tolerance);
-    this.classes          = options.classes;
-    this.offset           = options.offset;
-    this.initialised      = false;
-    this.onPin            = options.onPin;
-    this.onUnpin          = options.onUnpin;
-    this.onTop            = options.onTop;
-    this.onNotTop         = options.onNotTop;
-  }
-  Headroom.prototype = {
-    constructor : Headroom,
-  
-    /**
-     * Initialises the widget
-     */
-    init : function() {
-      console.log("headroom initializing");
-      if(!Headroom.cutsTheMustard) {
-        console.log("didnt cut the mustard");
-        return;
-      }
-  
-      this.elem.classList.add(this.classes.initial);
-      this.elem.style['-webkit-transition'] = "transform 200ms linear";
-      this.elem.style['transition'] = "all .25s ease-in-out";
-  
-      // defer event registration to handle browser 
-      // potentially restoring previous scroll position
-      setTimeout(this.attachEvent.bind(this), 100);
-  
-      return this;
-    },
-  
-    /**
-     * Unattaches events and removes any classes that were added
-     */
-    destroy : function() {
-      var classes = this.classes;
-  
-      this.initialised = false;
-      window.removeEventListener('scroll', this.debouncer, false);
-      this.elem.classList.remove(classes.unpinned, classes.pinned, classes.top, classes.initial);
-    },
-  
-    /**
-     * Attaches the scroll event
-     * @private
-     */
-    attachEvent : function() {
-      if(!this.initialised){
-        this.lastKnownScrollY = this.getScrollY();
-        this.initialised = true;
-        window.addEventListener('scroll', this.debouncer, false);
-  
-        this.debouncer.handleEvent();
-      }
-    },
-    
-    /**
-     * Unpins the header if it's currently pinned
-     */
-    unpin : function() {
-      var classList = this.elem.classList,
-        classes = this.classes;
-      
-      if(classList.contains(classes.pinned) || !classList.contains(classes.unpinned)) {
-        classList.add(classes.unpinned);
-        classList.remove(classes.pinned);
-        this.onUnpin && this.onUnpin.call(this);
-
-        this.elem.style['-webkit-transform'] = "translateY(-40px)"; //added
-      }
-    },
-  
-    /**
-     * Pins the header if it's currently unpinned
-     */
-    pin : function() {
-      var classList = this.elem.classList,
-        classes = this.classes;
-      
-      if(classList.contains(classes.unpinned)) {
-        classList.remove(classes.unpinned);
-        classList.add(classes.pinned);
-        this.onPin && this.onPin.call(this);
-        
-        this.elem.style['-webkit-transform'] = "translateY(0%)"; //added
-      }
-    },
-  
-    /**
-     * Handles the top states
-     */
-    top : function() {
-      var classList = this.elem.classList,
-        classes = this.classes;
-      
-      if(!classList.contains(classes.top)) {
-        classList.add(classes.top);
-        classList.remove(classes.notTop);
-        this.onTop && this.onTop.call(this);
-      }
-    },
-  
-    /**
-     * Handles the not top state
-     */
-    notTop : function() {
-      var classList = this.elem.classList,
-        classes = this.classes;
-      
-      if(!classList.contains(classes.notTop)) {
-        classList.add(classes.notTop);
-        classList.remove(classes.top);
-        this.onNotTop && this.onNotTop.call(this);
-      }
-    },
-  
-    /**
-     * Gets the Y scroll position
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/Window.scrollY
-     * @return {Number} pixels the page has scrolled along the Y-axis
-     */
-    getScrollY : function() {
-      return (window.pageYOffset !== undefined)
-        ? window.pageYOffset
-        : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-    },
-  
-    /**
-     * Gets the height of the viewport
-     * @see http://andylangton.co.uk/blog/development/get-viewport-size-width-and-height-javascript
-     * @return {int} the height of the viewport in pixels
-     */
-    getViewportHeight : function () {
-      return window.innerHeight
-        || document.documentElement.clientHeight
-        || document.body.clientHeight;
-    },
-  
-    /**
-     * Gets the height of the document
-     * @see http://james.padolsey.com/javascript/get-document-height-cross-browser/
-     * @return {int} the height of the document in pixels
-     */
-    getDocumentHeight : function () {
-      var body = document.body,
-        documentElement = document.documentElement;
-  
-      return Math.max(
-          body.scrollHeight, documentElement.scrollHeight,
-          body.offsetHeight, documentElement.offsetHeight,
-          body.clientHeight, documentElement.clientHeight
-      );
-    },
-  
-    /**
-     * determines if the scroll position is outside of document boundaries
-     * @param  {int}  currentScrollY the current y scroll position
-     * @return {bool} true if out of bounds, false otherwise
-     */
-    isOutOfBounds : function (currentScrollY) {
-      var pastTop  = currentScrollY < 0,
-        pastBottom = currentScrollY + this.getViewportHeight() > this.getDocumentHeight();
-      
-      return pastTop || pastBottom;
-    },
-  
-    /**
-     * determines if the tolerance has been exceeded
-     * @param  {int} currentScrollY the current scroll y position
-     * @return {bool} true if tolerance exceeded, false otherwise
-     */
-    toleranceExceeded : function (currentScrollY, direction) {
-      return Math.abs(currentScrollY-this.lastKnownScrollY) >= this.tolerance[direction];
-    },
-  
-    /**
-     * determine if it is appropriate to unpin
-     * @param  {int} currentScrollY the current y scroll position
-     * @param  {bool} toleranceExceeded has the tolerance been exceeded?
-     * @return {bool} true if should unpin, false otherwise
-     */
-    shouldUnpin : function (currentScrollY, toleranceExceeded) {
-      var scrollingDown = currentScrollY > this.lastKnownScrollY,
-        pastOffset = currentScrollY >= this.offset;
-  
-      return scrollingDown && pastOffset && toleranceExceeded;
-    },
-  
-    /**
-     * determine if it is appropriate to pin
-     * @param  {int} currentScrollY the current y scroll position
-     * @param  {bool} toleranceExceeded has the tolerance been exceeded?
-     * @return {bool} true if should pin, false otherwise
-     */
-    shouldPin : function (currentScrollY, toleranceExceeded) {
-      var scrollingUp  = currentScrollY < this.lastKnownScrollY,
-        pastOffset = currentScrollY <= this.offset;
-  
-      return (scrollingUp && toleranceExceeded) || pastOffset;
-    },
-  
-    /**
-     * Handles updating the state of the widget
-     */
-    update : function() {
-      var currentScrollY  = this.getScrollY(),
-        scrollDirection = currentScrollY > this.lastKnownScrollY ? 'down' : 'up',
-        toleranceExceeded = this.toleranceExceeded(currentScrollY, scrollDirection);
-  
-      if(this.isOutOfBounds(currentScrollY)) { // Ignore bouncy scrolling in OSX
-        return;
-      }
-  
-      if (currentScrollY <= this.offset ) {
-        this.top();
-      } else {
-        this.notTop();
-      }
-  
-      if(this.shouldUnpin(currentScrollY, toleranceExceeded)) {
-        this.unpin();
-      }
-      else if(this.shouldPin(currentScrollY, toleranceExceeded)) {
-        this.pin();
-      }
-  
-      this.lastKnownScrollY = currentScrollY;
-    }
-  };
-  /**
-   * Default options
-   * @type {Object}
-   */
-  Headroom.options = {
-    tolerance : {
-      up : 0,
-      down : 0
-    },
-    offset : 0,
-    classes : {
-      pinned : 'headroom--pinned',
-      unpinned : 'headroom--unpinned',
-      top : 'headroom--top',
-      notTop : 'headroom--not-top',
-      initial : 'headroom'
-    }
-  };
-  Headroom.cutsTheMustard = typeof features !== 'undefined' && features.rAF && features.bind && features.classList;
-
-  window.Headroom = Headroom;
-
-}(window, document));
-
-
-
-/*
- * END OF HEADROOM.jS
- */
-
-
-
-
-
 var toolbarHeight = '40';
 var newCssText = "margin-top: " + toolbarHeight + "px !important";
-document.body.style.position = "relative"; 
+//document.body.style.position = "relative"; 
 var newIframe = document.createElement('iframe');
 newIframe.width = '100%';
-newIframe.height = toolbarHeight + "px";
+newIframe.height = toolbarHeight + "px"; 
 newIframe.id = "searchToolbar"
 newIframe.style.border = 'none';
 newIframe.style.position = "fixed";
@@ -383,10 +11,59 @@ newIframe.style.top = "0px";
 newIframe.style.left = "0px";
 newIframe.style.margin = "0px";
 newIframe.style.zIndex = "99999999999999999";
-document.onload = init();
+var preFrameZIndex = "999999999999";
+var cntrl = false;
+var s = false;
+timeout = 5;
+var firstTime = true;
 
-function initializeHeadroom() {
-	var elements = document.getElementsByTagName('div'); //might need to add "header" tag
+makeSpace(timeout);
+$(document).ready(function() { 
+//	console.log ('moveFixedElements called on DOM ready');		
+	init();
+});
+
+function moveElementsByTag(tag, change) {
+	var elements = document.getElementsByTagName(tag);
+	if (window == window.top)
+	   console.log("ELEMENTS: " + elements.length); 
+	for (var elNum = 0; elNum < elements.length; elNum++){
+		var el = elements[elNum];
+		if (el.moved != true && el.id != 'placeHolderDiv') {
+			var elStyle = window.getComputedStyle(el);
+			if (elStyle.position == "fixed"){
+				var top = elStyle.top;
+				var newtop = top ? parseInt(top) : 0;
+				el.style.top = newtop + change + "px";
+			}
+			el.moved = true;
+		}
+	}
+}
+
+function moveFixedElements(change) {
+	moveElementsByTag("div", change);
+	moveElementsByTag("header", change);
+	//moveElementsByTag("nav", change);  //this seems to do more harm than good.
+}
+
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+    	//console.log("received message: " + request.action)
+        if (request.action == "removeToolbar")
+ 			removeToolbar(); 
+ 		else if(request.action == "loadToolbar") {
+ 		//    init();    
+ 		//    console.log('init finished');
+ 		}else if(request.action == 'resizeToolbar') {
+ 			newIframe.style.height = request.size + 'px';
+ 		}
+    }
+);    
+
+function initializeHeadroom(tag) {
+	var elements = document.getElementsByTagName(tag); //might need to add "header" tag
 	for (var elNum = 0; elNum < elements.length; elNum++){
 		var el = elements[elNum];
 		var elStyle = window.getComputedStyle(el);
@@ -395,53 +72,7 @@ function initializeHeadroom() {
 			headroom.init();
 		}
 	}
-}
-
-function getTabState() {
-	chrome.runtime.sendMessage({action: "getTabState"}, function(response) {
-		console.log(response.state)
-	});
-}
-
-document.onkeydown = checkKeyPress;
-function checkKeyPress(e) {
-  e = e || window.event;
-
-  if (e.keyCode == 39) {
-  //right arrow pressed
-    chrome.runtime.sendMessage({action: "right"});
-  }else if (e.keyCode == 37) {
-  //left arrow pressed
-    chrome.runtime.sendMessage({action: "left"});
-  }
-}
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-    	console.log("received message: " + request.action)
-        if (request.action == "removeToolbar")
- 			removeToolbar(); 
- 		else if(request.action == "loadToolbar")
- 		    init();    
-});
-
-function moveElementsByTag(tag, change) {
-	var elements = document.getElementsByTagName(tag); //might need to add "header" tag
-	for (var elNum = 0; elNum < elements.length; elNum++){
-		var el = elements[elNum];
-		var elStyle = window.getComputedStyle(el);
-		if (elStyle.position == "fixed"){
-			var top = elStyle.top;
-			var newtop = top ? parseInt(top) : 0;
-			el.style.top = newtop + change + "px";
-		}
-	}
-}
-
-function moveFixedElements(change) {
-	moveElementsByTag("div", change);
-	moveElementsByTag("header", change)
-}
+}		
 
 function removeToolbar() {
 	var toolbar = document.getElementById(newIframe.id);
@@ -455,15 +86,26 @@ function removeToolbar() {
 }
 
 function getTabState() {
-	console.log(this + "calling tab state");
+	//console.log(this + "calling tab state");
 	chrome.runtime.sendMessage({action: "getTabState"}, function(response) {
+		//console.log('response: ' + response.state + " " + response.query);
 		if (response.state == 'on') {
 			if (response.query == '') {
 				//no query has been made, so load toolbar without next button
-				newIframe.src = chrome.extension.getURL("toolbarInitial.html");
+//				newIframe.src = chrome.extension.getURL("toolbarInitial.html");
 			}else {
 				//load toolbar with next button
+				document.body.style.position = "relative"; 
 				newIframe.src = chrome.extension.getURL("toolbar.html");
+				document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
+		//		console.log("moveFixedElements in getTabState");
+				moveFixedElements(toolbarHeight);
+				document.body.insertBefore(newIframe, document.body.firstChild);
+				window.setTimeout(function() {
+					var placeHolderDiv = document.getElementById('placeHolderDiv');
+				    placeHolderDiv.parentNode.removeChild(placeHolderDiv);
+				}, 1000);
+				
 				if (response.next != "none") {
 					var nextPage = document.createElement("link");
 					nextPage.rel = "prerender";
@@ -471,19 +113,128 @@ function getTabState() {
 					document.getElementsByTagName("head")[0].appendChild(nextPage);
 				}
 			}
-		document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
-		moveFixedElements(toolbarHeight);
-		document.body.insertBefore(newIframe, document.body.firstChild);
-		var headroom = new Headroom(newIframe);
-		headroom.init();
+		
+			var headroom = new Headroom(newIframe);
+			headroom.init();
 	    } 
 	});
 }
 
 function init() {
-	if (window == window.top) {
-		getTabState();
-		initializeHeadroom();
+	//	getTabState();
+	document.body.style.position = "relative"; 
+	newIframe.src = chrome.extension.getURL("toolbar.html");
+	document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
+//		console.log("moveFixedElements in getTabState");
+	moveFixedElements(toolbarHeight);
+	document.body.insertBefore(newIframe, document.body.firstChild);
+	window.setTimeout(function() {
+		var placeHolderDiv = document.getElementById('placeHolderDiv');
+	    placeHolderDiv.parentNode.removeChild(placeHolderDiv);
+	}, 1000);
+	
+	chrome.runtime.sendMessage({action: "getNext"}, function(response) {
+		if (response.next != "none") {
+			var nextPage = document.createElement("link");
+			nextPage.rel = "prerender";
+			nextPage.href = response.next;
+			document.getElementsByTagName("head")[0].appendChild(nextPage);
+		}
+	});
+	var headroom = new Headroom(newIframe);
+	headroom.init();
+	initializeHeadroom('div');
+	initializeHeadroom('header');
+}
+
+
+
+
+//create space above body before dom ready has fired
+function makeSpace(wait) {
+	//console.log('MAKESPACE() CALLED');
+	if (firstTime) {
+		//console.log("INSIDE FIRST TIME");
+		window.addEventListener("load", function() {
+	//	   console.log("moveFixedElements in window load event");
+           moveFixedElements(toolbarHeight);
+        }, false);
+
+		var style = document.createElement('style');
+	    var text = "body { position:relative; top:0px; margin-top: " + toolbarHeight + "px; }";
+	    var textNode = document.createTextNode(text);
+	    style.appendChild(textNode);
+	    document.documentElement.appendChild(style); 
+        
+        //make div to give new space toolbar's background color. 
+        var div = document.createElement("div");
+        div.style.backgroundColor = "#195695";
+        div.style.height = toolbarHeight + "px";
+        div.style.width = "100%";
+        div.id = "placeHolderDiv"
+        div.style.position = "fixed";
+        div.style.top = "0px";
+        div.style.left = "0px";
+        div.style.margin = "0px";
+        div.style.zIndex = preFrameZIndex;
+        div.style.display = "block";
+        div.style.visibility = "visible";
+        document.documentElement.appendChild(div);
+
+	    firstTime = false;
 	}
 
+	if(document.body) {		
+        console.log("moveFixedElements in document body if");
+		moveFixedElements(toolbarHeight);
+	}else {
+	    // The body hasn't been created yet, wait for it.
+	    console.log("SET TIMOUT");
+	    window.setTimeout(function() {
+	        makeSpace(timeout);
+	    }, wait);
+	    timeout = timeout * 2;
+	}
 }
+
+
+
+//document.onkeydown = checkKeyPress;
+//function checkKeyPress(e) {
+//  e = e || window.event;
+//  if (e.keyCode == 16) {
+//  	cntrl = true;
+//  } 
+//  if (e.keyCode == 32) {
+//  	s = true;
+//  }
+//  if (cntrl && s) {
+//  	newIframe.width = '500px';
+//  	newIframe.style.display = "block";
+//  	newIframe.contentWindow.focus();
+//  }
+//  if (e.keyCode == 39) {
+  //right arrow pressed
+//    chrome.runtime.sendMessage({action: "right"});
+//  }else if (e.keyCode == 37) {
+  //left arrow pressed
+//    chrome.runtime.sendMessage({action: "left"});
+//  }
+//}
+
+//document.onkeyup = upKeyPress;
+//function upKeyPress(e) {
+// e = e || window.event;
+//  if (cntrl && s) {
+//  	newIframe.style.display = "block";
+  	//document.getElementById('searchBox').focus();
+//  }
+//  if (e.keyCode == 17) {
+//  	cntrl = false;
+//  } 
+//  if (e.keyCode == 83) {
+//  	s = false;
+//  }
+//}
+
+

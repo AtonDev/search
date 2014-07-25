@@ -1,53 +1,59 @@
-//window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
-window.addEventListener('load', function(evt) {
-	chrome.runtime.sendMessage({action: "loaded"}, function(response) {
-	//	var nextPage = document.createElement('iframe');
-    //    nextPage.width = '0px';
-    //    nextPage.height = "0px";
-    //    nextPage.src = response.next;
-    //    document.body.insertBefore(nextPage, document.body.firstChild);
-		var query = response.query;
-		if (query != '') {
+
+$(document).ready(function(){
+    var toolbarHeight = '40';
+    var acHeight = '150';
+    chrome.runtime.sendMessage({action: "loaded"}, function(response) {
+        var query = response.query;
+        if (query != '') {
             document.getElementById('searchBox').value = response.query;
             document.getElementById('next').addEventListener('click', function() {
-	            chrome.runtime.sendMessage({action: "next"});
+                chrome.runtime.sendMessage({action: "next"});
             })
         }
     });
 
     document.getElementById('searchForm').addEventListener('submit', function(event) {
-    	event.preventDefault();
-    	var query = document.getElementById('searchBox').value;
+        event.preventDefault();
+        var query = document.getElementById('searchBox').value;
         chrome.runtime.sendMessage({action: "search", query: query});
     });
 
     document.getElementById('removeToolbarBtn').addEventListener('click', function() {
-	    chrome.runtime.sendMessage({action: "removeToolbar"});
+        chrome.runtime.sendMessage({action: "removeToolbar"});
     })
+
+    function resizeToolbar(size) {
+      chrome.runtime.sendMessage({action: "resizeToolbar", size: size});
+    }
+
+    $("#searchBox").autocomplete({
+        source: function(request, response) {
+            var yql_ac = 'https://query.yahooapis.com/v1/public/yql?q=select%20k%20from%20yahoo.search.suggestions%20where%20command%3D%22'+ request.term +'%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+            $.ajax({
+                url: yql_ac,
+                dataType: "json",              
+                success: function(data) {
+                    var suggestions = [];
+                    var counter = 0;
+                    // for each element in the data.gossip.results array ...
+                    $.each(data.query.results.s, function(i, val) {
+                        // .. push the value of the key inside our array
+                        suggestions.push(val.k);
+                        // dont display more than 4 results
+                        return i < 3;
+                    });
+                    // call response with our collected values
+                    response(suggestions);
+                }
+            });
+        }
+    });
+
+    $( "#searchBox" ).on( "autocompleteopen", function( event, ui ) {
+          resizeToolbar(acHeight);
+    });
+
+    $( "#searchBox" ).on( "autocompleteclose", function( event, ui ) {
+          resizeToolbar(toolbarHeight);
+    });
 });
-
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-    	console.log("received message: " + request.action)
-        if (request.action == "populateSearchBox") {
-        	console.log("populating search box");
-        	console.log("data: " + request.data);
-        	console.log("ele: " + document.getElementById('searchBox'));
-        	console.log("value: " + document.getElementById('searchBox').value);
-        }	
-  });
-
-
-
-
-//document.getElementById('searchBox').addEventListener("submit", submitToBackground(), false);
-
-
-//Google Analytics: change UA-XXXXX-X to be your site's ID. 
-(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-    function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-    e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-    e.src='//www.google-analytics.com/analytics.js';
-    r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-    ga('create','UA-XXXXX-X');ga('send','pageview');
