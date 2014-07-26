@@ -168,7 +168,7 @@ function makeSpace(wait) {
         
         //make div to give new space toolbar's background color. 
         var div = document.createElement("div");
-        div.style.backgroundColor = "#195695";
+        div.style.backgroundColor = "#e5e5e5";
         div.style.height = toolbarHeight + "px";
         div.style.width = "100%";
         div.id = "placeHolderDiv"
