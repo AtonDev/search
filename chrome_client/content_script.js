@@ -1,4 +1,4 @@
-var toolbarHeight = '40';
+var toolbarHeight = '33';
 var newCssText = "margin-top: " + toolbarHeight + "px !important";
 //document.body.style.position = "relative"; 
 var newIframe = document.createElement('iframe');
