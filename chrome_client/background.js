@@ -14,9 +14,9 @@ function movePage(id, dir) {
   }else newIndex = idx + 1;
   tabStates[id].idx = newIndex;
   chrome.tabs.update(id, {url: urls[newIndex]}); 
-  console.log('title: ' + titles[newIndex]);
-  console.log('abstract: ' + abstract[newIndex]);
-  console.log('dispurl: ' + dispurl[newIndex]);
+  console.log('title: ' + tabStates[id].titles[newIndex]);
+  console.log('abstract: ' + tabStates[id].abstract[newIndex]);
+  console.log('dispurl: ' + tabStates[id].dispurl[newIndex]);
 }
 
 
