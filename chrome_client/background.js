@@ -14,11 +14,14 @@ function movePage(id, dir) {
   }else newIndex = idx + 1;
   tabStates[id].idx = newIndex;
   chrome.tabs.update(id, {url: urls[newIndex]}); 
+  console.log('title: ' + titles[newIndex]);
+  console.log('abstract: ' + abstract[newIndex]);
+  console.log('dispurl: ' + dispurl[newIndex]);
 }
 
 
 function submitToServer(tabId, query) {
-  var url = "http://instantsearch.herokuapp.com/s?search=" + query;
+  var url = "http://instantsearch.herokuapp.com/scomp?search=" + query;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function() {
@@ -28,6 +31,15 @@ function submitToServer(tabId, query) {
         tabStates[tabId].urls = urls; 
         tabStates[tabId].idx = 0;   
         chrome.tabs.update(tabId, {active: true, url: urls[0]}); 
+        var titles = JSON.parse(xhr.responseText).titles;
+        var abstracts = JSON.parse(xhr.responseText).abstracts;
+        var dispurls = JSON.parse(xhr.responseText).dispurls;
+        tabStates[tabId].titles = titles;
+        tabStates[tabId].abstracts = abstracts;
+        tabStates[tabId].dispurls = dispurls;
+        console.log('title: ' + titles[0]);
+        console.log('abstract: ' + abstracts[0]);
+        console.log('dispurl: ' + dispurls[0]);
 
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
