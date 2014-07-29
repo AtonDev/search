@@ -24,8 +24,7 @@
   "web_accessible_resources": [
     "css/*.css",
     "toolbar.html",
-    "toolbarInitial.html",
-    "autocomplete.html"
+    "sidebar.html"
   ],
 
   "omnibox": { "keyword" : "ß" },
