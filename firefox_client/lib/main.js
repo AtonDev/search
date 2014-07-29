@@ -119,7 +119,7 @@ function send_event(action_event) {
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
   //post request to send event
   var req = Request({
-    url: "https://analytics.alts.io/api/v1/is_event",
+    url: "http://analytics.alts.io/api/v1/is_event",
     //url: "http://localhost:3000/api/v1/is_event",
     content: params,
     onComplete: function(response) {
@@ -173,7 +173,7 @@ function handleFrameEvent(message) {
 
 function getUrls(query_, source) {
   var query = query_.trim();
-  var url_ = "https://search.alts.io/s?search=" + query;
+  var url_ = "http://search.alts.io/s?search=" + query;
 
   var req = Request({
     url: url_,
