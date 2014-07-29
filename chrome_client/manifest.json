@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Alt S",
+  "name": "alt-s",
   "description": "An alternative way to search the web.",
   "version": "0.1",
 
@@ -42,5 +42,6 @@
       "suggested_key": { "default": "Alt+Left" },
       "description": "Moves back to the previous search result"
     }
-  }
+  },
+    "icons": { "128": "search-128.png" }
 }
