@@ -14,14 +14,14 @@ function movePage(id, dir) {
   }else newIndex = idx + 1;
   tabStates[id].idx = newIndex;
   chrome.tabs.update(id, {url: urls[newIndex]}); 
-  console.log('title: ' + tabStates[id].titles[newIndex]);
-  console.log('abstract: ' + tabStates[id].abstract[newIndex]);
-  console.log('dispurl: ' + tabStates[id].dispurl[newIndex]);
+//  console.log('title: ' + tabStates[id].titles[newIndex]);
+//  console.log('abstract: ' + tabStates[id].abstract[newIndex]);
+//  console.log('dispurl: ' + tabStates[id].dispurl[newIndex]);
 }
 
 
 function submitToServer(tabId, query) {
-  var url = "http://instantsearch.herokuapp.com/scomp?search=" + query;
+  var url = "http://instantsearch.herokuapp.com/s?search=" + query;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function() {
@@ -31,15 +31,15 @@ function submitToServer(tabId, query) {
         tabStates[tabId].urls = urls; 
         tabStates[tabId].idx = 0;   
         chrome.tabs.update(tabId, {active: true, url: urls[0]}); 
-        var titles = JSON.parse(xhr.responseText).titles;
-        var abstracts = JSON.parse(xhr.responseText).abstracts;
-        var dispurls = JSON.parse(xhr.responseText).dispurls;
-        tabStates[tabId].titles = titles;
-        tabStates[tabId].abstracts = abstracts;
-        tabStates[tabId].dispurls = dispurls;
-        console.log('title: ' + titles[0]);
-        console.log('abstract: ' + abstracts[0]);
-        console.log('dispurl: ' + dispurls[0]);
+     //   var titles = JSON.parse(xhr.responseText).titles;
+     //   var abstracts = JSON.parse(xhr.responseText).abstracts;
+     //   var dispurls = JSON.parse(xhr.responseText).dispurls;
+     //   tabStates[tabId].titles = titles;
+     //   tabStates[tabId].abstracts = abstracts;
+     //   tabStates[tabId].dispurls = dispurls;
+    //    console.log('title: ' + titles[0]);
+     //   console.log('abstract: ' + abstracts[0]);
+     //   console.log('dispurl: ' + dispurls[0]);
 
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
@@ -52,6 +52,7 @@ function submitAnalytics(tabId, evt, query) {
   var xhr = new XMLHttpRequest();
   var nonce = Math.floor(Math.random() * Math.pow(2,31));
   var params = 'query=' + query + "&event=" + evt + "&browser=chrome" + "&nonce=" + nonce;
+  console.log('submitting analytics with params = ' + params);
   xhr.open('POST', url, true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhr.onreadystatechange = function() {
