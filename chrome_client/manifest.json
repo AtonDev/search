@@ -3,7 +3,7 @@
 
   "name": "alt-s",
   "description": "An alternative way to search the web.",
-  "version": "0.1",
+  "version": "0.1.2",
 
   "permissions": [
      "http://*/*",

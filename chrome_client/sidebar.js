@@ -47,7 +47,7 @@ $(document).ready(function(){
                 dUrls[i].innerHTML = dispurls[i];
                 abs[i].innerHTML = abstracts[i];
                 sections[i].href = urls[i];
-                aTag.style.color = "#1a0dab"
+                aTag.style.color = "#1a0dab";
                 console.log('visitedSEctions: ' + visitedSections);
                 if (response.curUrl == urls[i]) {
                     console.log("URLS MATCH");
@@ -80,7 +80,7 @@ $(document).ready(function(){
                     curUrl = this.href
                     var xPos = document.body.scrollLeft;
                     var yPos = document.body.scrollTop;
-                    //console.log('in click listener xPos: ' + xPos + ' yPos: ' + yPos);
+                    console.log('in click listener xPos: ' + xPos + ' yPos: ' + yPos);
                     chrome.runtime.sendMessage({action: "linkClicked", url: curUrl, id: id, xPos: xPos, yPos: yPos});
                  });
             }

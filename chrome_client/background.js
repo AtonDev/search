@@ -15,7 +15,7 @@ function movePage(id, dir) {
   tabStates[id].idx = newIndex;
   chrome.tabs.update(id, {url: urls[newIndex]}); 
   console.log('title: ' + tabStates[id].titles[newIndex]);
-  console.log('abstract: ' + tabStates[id].abstract[newIndex]);
+  console.log('abstract: ' + tabStates[id].abstracts[newIndex]);
   console.log('dispurl: ' + tabStates[id].dispurl[newIndex]);
 }
 
@@ -194,6 +194,19 @@ chrome.runtime.onMessage.addListener(
           case 'search':
               //console.log ('query: ' + query);
               executeSearch(id, request.query);        
+              break;
+
+           case 'linkClicked':
+              tabState.xPos = request.xPos;
+              tabState.yPos = request.yPos;
+           //   if (tabState.visitedSections) {
+                 // tabState.visitedSections.insert(request.id);
+            //  }else {
+            //    tabState.visitedSections = [id];
+            //  }
+              console.log('in background.js xPos, yPos = ' + tabState.xPos + ', ' + tabState.yPos);
+              loadUrl(id, request.url);
+              
               break;
 
           case 'next':
