@@ -56,4 +56,8 @@ $(document).ready(function(){
     $( "#searchBox" ).on( "autocompleteclose", function( event, ui ) {
           resizeToolbar(toolbarHeight);
     });
+
+    document.getElementById('uiSwitchBtn').addEventListener('click', function() {
+        chrome.runtime.sendMessage({action: "uiTypeChange"});
+    });
 });

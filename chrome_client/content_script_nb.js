@@ -1,4 +1,4 @@
-var toolbarHeight = '40';
+var toolbarHeight = '33';
 var newCssText = "margin-top: " + toolbarHeight + "px !important";
 //document.body.style.position = "relative"; 
 var newIframe = document.createElement('iframe');
@@ -168,7 +168,7 @@ function makeSpace(wait) {
         
         //make div to give new space toolbar's background color. 
         var div = document.createElement("div");
-        div.style.backgroundColor = "#195695";
+        div.style.backgroundColor = "#e5e5e5";
         div.style.height = toolbarHeight + "px";
         div.style.width = "100%";
         div.id = "placeHolderDiv"

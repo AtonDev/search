@@ -14,11 +14,20 @@ function movePage(id, dir) {
   }else newIndex = idx + 1;
   tabStates[id].idx = newIndex;
   chrome.tabs.update(id, {url: urls[newIndex]}); 
+  console.log('title: ' + tabStates[id].titles[newIndex]);
+  console.log('abstract: ' + tabStates[id].abstracts[newIndex]);
+  console.log('dispurl: ' + tabStates[id].dispurl[newIndex]);
+}
+
+function loadUrl(id, url) {
+  console.log("load url with : " + url);
+  tabStates[id].curUrl = url;
+  chrome.tabs.update(id, {url: url});
 }
 
 
 function submitToServer(tabId, query) {
-  var url = "http://instantsearch.herokuapp.com/s?search=" + query;
+  var url = "http://instantsearch.herokuapp.com/scomp?search=" + query;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function() {
@@ -28,6 +37,16 @@ function submitToServer(tabId, query) {
         tabStates[tabId].urls = urls; 
         tabStates[tabId].idx = 0;   
         chrome.tabs.update(tabId, {active: true, url: urls[0]}); 
+        var titles = JSON.parse(xhr.responseText).titles;
+        var abstracts = JSON.parse(xhr.responseText).abstracts;
+        var dispurls = JSON.parse(xhr.responseText).dispurls;
+        tabStates[tabId].titles = titles;
+        tabStates[tabId].abstracts = abstracts;
+        tabStates[tabId].dispurls = dispurls;
+        console.log('title: ' + titles[0]);
+        console.log('abstract: ' + abstracts[0]);
+        console.log('dispurl: ' + dispurls[0]);
+
 
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
@@ -40,6 +59,7 @@ function submitAnalytics(tabId, evt, query) {
   var xhr = new XMLHttpRequest();
   var nonce = Math.floor(Math.random() * Math.pow(2,31));
   var params = 'query=' + query + "&event=" + evt + "&browser=chrome" + "&nonce=" + nonce;
+  console.log('submitting analytics with params = ' + params);
   xhr.open('POST', url, true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhr.onreadystatechange = function() {
@@ -72,9 +92,11 @@ function searchHelper(id, query) {
 }
 
 function initializeTab(id) {
-  tabStates[id] = {};
-  tabStates[id].state = 'on';
-  tabStates[id].query = '';
+  var tabState = {};
+  tabState.state = 'on';
+  tabState.query = '';
+  tabState.uiType = 'sidebar';
+  tabStates[id] = tabState;
 }
 
 function togglePopup(wndw) {
@@ -93,7 +115,7 @@ function togglePopup(wndw) {
         } 
       }else {
         initializeTab(id);
-        tabStates[id].popup == wndw; //popup hasnt been loaded already so store window object
+        tabStates[id].popup = wndw; //popup hasnt been loaded already so store window object
       }
     });
    console.log('browser action disabled');
@@ -119,8 +141,9 @@ chrome.omnibox.onInputEntered.addListener(function (text, disposition) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tabId in tabStates && changeInfo.status == 'loading') {
+  if (tabId in tabStates && changeInfo.status == 'loading' && tabStates[id].query != '') {
     var injectDetails = new Object();
+    var tabState = tabStates[tabId];
     injectDetails.runAt = "document_start";
 
     injectDetails.file = 'headroom.js';
@@ -129,7 +152,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     injectDetails.file = 'jquery-1.11.1.min.js';
     chrome.tabs.executeScript(tabId, injectDetails);
 
-    injectDetails.file = 'content_script.js';
+    if (tabState.uiType == "sidebar") {
+      injectDetails.file = 'content_script_sb.js';
+    } else injectDetails.file = 'content_script_nb.js';
     chrome.tabs.executeScript(tabId, injectDetails);
   }
 });
@@ -171,6 +196,19 @@ chrome.runtime.onMessage.addListener(
               executeSearch(id, request.query);        
               break;
 
+           case 'linkClicked':
+              tabState.xPos = request.xPos;
+              tabState.yPos = request.yPos;
+           //   if (tabState.visitedSections) {
+                 // tabState.visitedSections.insert(request.id);
+            //  }else {
+            //    tabState.visitedSections = [id];
+            //  }
+              console.log('in background.js xPos, yPos = ' + tabState.xPos + ', ' + tabState.yPos);
+              loadUrl(id, request.url);
+              
+              break;
+
           case 'next':
               //console.log("next, query: " + query);
               movePage(id, "forward"); 
@@ -178,7 +216,9 @@ chrome.runtime.onMessage.addListener(
               break;
 
           case 'loaded': //TODO add timeout if newtab's onCreated hasn't fired yet so tabState can be created first
-              sendResponse({action: "populateSearchBox", query: tabState.query});
+              sendResponse({query: tabState.query, urls: tabState.urls, abstracts: tabState.abstracts,
+                           titles: tabState.titles, dispurls: tabState.dispurls, curUrl: tabState.curUrl,
+                           xPos: tabState.xPos, yPos: tabState.yPos, visitedSections: tabState.visitedSections});
               break;
 
           case 'removeToolbar':
@@ -205,6 +245,13 @@ chrome.runtime.onMessage.addListener(
 
           case 'resizeToolbar':
               resizeToolbar(request.size);
+              break;
+
+          case 'uiTypeChange':
+              if (tabStates[id].uiType == 'sidebar')
+                tabStates[id].uiType = 'navbar';
+              else tabStates[id].uiType = 'sidebar';
+              chrome.tabs.reload(id);
               break;
 
        }

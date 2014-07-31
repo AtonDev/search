@@ -100,9 +100,9 @@ textarea {
 
 #toolbar {
     width: 100%;
-    height: 39px;
+    height: 100%;
     position: absolute;
-    background: #195695;
+    background: #e5e5e5;
     border-style:solid;
     border-top-width: 0px;
     border-left-width: 0px;
@@ -115,27 +115,15 @@ textarea {
     position: fixed;
     margin-top: 3px;
     float: left;
-    background: #195695;
     width: 35%;
     max-width: 600px;
     z-index: 1;
-}
-
-#searchFormDivInitial {
-    position: fixed;
-    margin-top: 2px;
-    left: 49%;
-
-    background: #195695;
-    width: 97%;
-    max-width: 600px;
-    z-index: 1;
+    margin-left: 3%;
 }
 
 .bar {
-    height: 27px;
+    height: 22px;
     width: 100%;
-    margin-left: 10% ;
 }
 
 .barInitial {
@@ -144,26 +132,28 @@ textarea {
     margin-left: -50%;
 }
 #nextBtnDiv {
-    width: 90px;
+    width: 13.4%;
     position: fixed;
-    background: #195695;
     float:left;
-    left: 50%;
-    margin-left: -70px;
+    left: 40%;
     z-index: 999;
-    margin-top: 5px;
+    max-width: 229px;
+    margin-top: 3px;
 }
 
 #removeBtnDiv {
 
-    margin-top: 8px;
+    margin-top: 5px;
     margin-right: 25px;
     float: right;
     width: 10px;
+    background: transparent;
+
 }
 #removeToolbarBtn {
-    background: #195695;
     border: none;
+    background: #e5e5e5;
+    color: gray;
 }
 
 .innerButton {
@@ -176,46 +166,56 @@ textarea {
     font-size: 1em !important;
 }
 
+#uiSwitchBtn {
+    background: transparent;
+    border: none;
+    color: gray;
+    position: fixed;
+    top: 5px;
+    right: 50px;
+
+}
+
 .nextBtn {
-    -moz-box-shadow:inset 0px 1px 0px 0px #c1ed9c;
-    -webkit-box-shadow:inset 0px 1px 0px 0px #c1ed9c;
-    box-shadow:inset 0px 1px 0px 0px #c1ed9c;
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #9dce2c), color-stop(1, #8cb82b) );
-    background:-moz-linear-gradient( center top, #9dce2c 5%, #8cb82b 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#9dce2c', endColorstr='#8cb82b');
-    background-color:#9dce2c;
-    -webkit-border-top-left-radius:15px;
-    -moz-border-radius-topleft:15px;
-    border-top-left-radius:15px;
+    -moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+    box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5) );
+    background:-moz-linear-gradient( center top, #79bbff 5%, #378de5 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5');
+    background-color:#79bbff;
+    -webkit-border-top-left-radius:0px;
+    -moz-border-radius-topleft:0px;
+    border-top-left-radius:0px;
     -webkit-border-top-right-radius:0px;
     -moz-border-radius-topright:0px;
     border-top-right-radius:0px;
-    -webkit-border-bottom-right-radius:15px;
-    -moz-border-radius-bottomright:15px;
-    border-bottom-right-radius:15px;
+    -webkit-border-bottom-right-radius:0px;
+    -moz-border-radius-bottomright:0px;
+    border-bottom-right-radius:0px;
     -webkit-border-bottom-left-radius:0px;
     -moz-border-radius-bottomleft:0px;
     border-bottom-left-radius:0px;
-    text-indent:0px;
-    border:1px solid #83c41a;
+    text-indent:0;
+    border:1px solid #84bbf3;
     display:inline-block;
     color:#ffffff;
-    font-family:Verdana;
-    font-size:21px;
-    font-weight:bold;
+    font-family:Arial;
+    font-size:15px;
+    font-weight:normal;
     font-style:normal;
-    height:30px;
-    line-height:30px;
-    width:130px;
+    height:28px;
+    line-height:28px;
+    width:100%;
     text-decoration:none;
     text-align:center;
-    text-shadow:2px 2px 0px #689324;
+    text-shadow:1px 1px 0px #528ecc;
 }
 .nextBtn:hover {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #8cb82b), color-stop(1, #9dce2c) );
-    background:-moz-linear-gradient( center top, #8cb82b 5%, #9dce2c 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8cb82b', endColorstr='#9dce2c');
-    background-color:#8cb82b;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+    background:-moz-linear-gradient( center top, #378de5 5%, #79bbff 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff');
+    background-color:#378de5;
 }.nextBtn:active {
     position:relative;
     top:1px;
