@@ -220,19 +220,20 @@ function getUrls(query_, source) {
   var url_ = "http://search.alts.io/s?search=" + query;
   //send_event("search");
   send_analytics_event("Searched", {
-    "Search Query" : query
+    "Search Query" : query,
+    "Origin": "navbar"
   });
 
   var req = Request({
     url: url_,
     content: query,
     onComplete: function(response) {
-      handleResponse(response, tabs.activeTab, query);
+      handleGetUrlsResponse(response, tabs.activeTab, query);
     }
   }).get();
 };
 
-function handleResponse(response, tab, query) {
+function handleGetUrlsResponse(response, tab, query) {
   var urls = JSON.parse(response.text).urls;
   tab_properties[tab.id] = {};
   tab_properties[tab.id]["query"] = query;
