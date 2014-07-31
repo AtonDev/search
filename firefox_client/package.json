@@ -5,6 +5,6 @@
   "description": "An alternative way to search and explore the web.",
   "author": "APG",
   "license": "LPGL 3.0",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "icon": "data/icons/search-128.png"
 }
