@@ -133,7 +133,7 @@ function previous_page(type) {
 
 function get_uid() {
   var req = Request({
-    url : "http://0.0.0.0:3000/new_token",
+    url : "http://search.alts.io/new_token",
     onComplete: function (response) {
       ss.storage.uid = JSON.parse(response.text).token;
     }
@@ -152,16 +152,16 @@ function send_analytics_event(alts_event, properties) {
     params['context'] = context;
 
     var req = Request({
-      url: "https://api.segment.io/v1/track",
+      /*url: "https://api.segment.io/v1/track",
       headers: {
         "Authorization": "Basic NnhjamRlNGI1NA=="
-      },
+      },*/
       // for production MmJpdWs5ZnA1eA==
-      /*
+      
       headers: {
         "Authorization": "Basic MmJpdWs5ZnA1eA=="
       },
-      */
+      
       content: params,
       onComplete: function(response) {
         console.log("analytics response: " + response.text);
