@@ -28,13 +28,13 @@ var timeout = 10;
 var nextHotKey = Hotkey({
   combo: "alt-Right",
   onPress: function() {
-    next_page("hotkey");
+    next_page("nextHotkey");
   }
 });
 var previousHotKey = Hotkey({
   combo: "alt-Left",
   onPress: function() {
-    previous_page("hotkey");
+    previous_page("previousHotkey");
   }
 });
 var altsKey = Hotkey({
@@ -87,7 +87,7 @@ function next_page(type) {
     load_url(idx, tab);
   };
   //send_event("next");
-  send_analytics_event("Load URL", {
+  send_analytics_event("Loaded URL", {
     "Origin": "alt-s",
     "URL": tab_properties[tab.id]["urls"][idx+1],
     "Trigger": type
@@ -102,7 +102,7 @@ function previous_page(type) {
     load_url(idx, tab)
   };
   //send_event("previous");
-  send_analytics_event("Load URL", {
+  send_analytics_event("Loaded URL", {
     "Origin": "alt-s",
     "URL": tab_properties[tab.id]["urls"][idx-1],
     "Trigger": type
@@ -156,6 +156,12 @@ function send_analytics_event(alts_event, properties) {
       headers: {
         "Authorization": "Basic NnhjamRlNGI1NA=="
       },
+      // for production MmJpdWs5ZnA1eA==
+      /*
+      headers: {
+        "Authorization": "Basic MmJpdWs5ZnA1eA=="
+      },
+      */
       content: params,
       onComplete: function(response) {
         console.log("analytics response: " + response.text);
@@ -192,7 +198,7 @@ function handleFrameEvent(message) {
       }, message.origin);
       break;
     case "next":
-      next_page("button");
+      next_page("nextBtn");
       break;
     case "autocomplete":
       var q = message.data.query;
@@ -213,7 +219,7 @@ function getUrls(query_, source) {
   var query = query_.trim();
   var url_ = "http://search.alts.io/s?search=" + query;
   //send_event("search");
-  send_analytics_event("Search", {
+  send_analytics_event("Searched", {
     "Search Query" : query
   });
 
@@ -234,7 +240,7 @@ function handleResponse(response, tab, query) {
   tab_properties[tab.id]["url_index"] = 0;
   if (urls.length > 0) {
     load_url(0, tab);
-    send_analytics_event("Load URL", {
+    send_analytics_event("Loaded URL", {
       "Origin": "alt-s",
       "URL": tab_properties[tab.id]["urls"][idx],
       "Trigger": "search"
@@ -296,13 +302,13 @@ function tabActivate(tab) {
 }
 
 function toolbar_showing(e) {
-  send_analytics_event("Show UI", {
+  send_analytics_event("Showed UI", {
     "Element": "navbar"
   });
 }
 
 function toolbar_hiding(e) {
-  send_analytics_event("Hide UI", {
+  send_analytics_event("Hid UI", {
     "Element": "navbar"
   });
 }
