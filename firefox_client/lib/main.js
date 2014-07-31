@@ -144,9 +144,7 @@ function get_uid() {
 function send_analytics_event(alts_event, properties) {
   if (ss.storage.uid != null) {
     var context = {};
-    context['userAgent'] = httpHandler.userAgent;//'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.90 Safari/537.1';
-    //for mixpanel need to send browser property
-    //properties['Browser'] = "firefox";
+    context['userAgent'] = httpHandler.userAgent
     var params = {};
     params['userId'] = ss.storage.uid;
     params['event'] = alts_event;
