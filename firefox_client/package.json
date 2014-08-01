@@ -2,9 +2,9 @@
   "name": "alts",
   "title": "Alt-S",
   "id": "jid1-t4SkqBBFWGRs8A",
-  "description": "An alternative way to search the we.",
+  "description": "An alternative way to search the web.",
   "author": "APG",
   "license": "MPL 2.0",
-  "version": "0.1",
+  "version": "0.1.1",
   "icon": "data/icons/search-128.png"
 }

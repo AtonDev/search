@@ -3,30 +3,38 @@ var Request = require("sdk/request").Request;
 var tabs = require("sdk/tabs");
 var { Hotkey } = require("sdk/hotkeys");
 var data = require("sdk/self").data;
-//var formData = require("sdk/FormData");
+var ss = require("sdk/simple-storage");
 
 var ui = require("sdk/ui");
 var { ActionButton } = require("sdk/ui/button/action");
 var { Toolbar } = require("sdk/ui/toolbar");
 var { Frame } = require("sdk/ui/frame");
 var panels = require("sdk/panel");
+
+var {Cc, Ci} = require("chrome");
+var httpHandler = Cc["@mozilla.org/network/protocol;1?name=http"].
+  getService(Ci.nsIHttpProtocolHandler);
+
+
+
 // global variables
 var tab_properties = {};
-
+var timeout = 10;
 // main
+
 
 //hotkey
 
 var nextHotKey = Hotkey({
   combo: "alt-Right",
   onPress: function() {
-    next_page();
+    next_page("hotkey");
   }
 });
 var previousHotKey = Hotkey({
   combo: "alt-Left",
   onPress: function() {
-    previous_page();
+    previous_page("hotkey");
   }
 });
 var altsKey = Hotkey({
@@ -71,46 +79,41 @@ var toolbar = ui.Toolbar({
   items: [search_frame]
 });
 
-function next_page() {
+function next_page(type) {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] += 1;
     var idx = tab_properties[tab.id].url_index;
     load_url(idx, tab);
   };
-  send_event("next");
+  //send_event("next");
+  send_analytics_event("Load URL", {
+    "Origin": "alt-s",
+    "URL": tab_properties[tab.id]["urls"][idx+1],
+    "Trigger": type
+  });
 };
 
-function previous_page() {
+function previous_page(type) {
   var tab = tabs.activeTab;
   if (tab_properties.hasOwnProperty(tab.id)) {
     tab_properties[tab.id]["url_index"] -= 1;
     var idx = tab_properties[tab.id].url_index;
     load_url(idx, tab)
   };
-  send_event("previous");
+  //send_event("previous");
+  send_analytics_event("Load URL", {
+    "Origin": "alt-s",
+    "URL": tab_properties[tab.id]["urls"][idx-1],
+    "Trigger": type
+  });
 };
 
-//launch button
-/*var launch = ui.ActionButton({
-  id: "launch",
-  label: "launch",
-  icon: "./icons/search-128.png",
-  onClick: launch_toolbar
-});
-
-function launch_toolbar() {
-  if (toolbar.hidden) {
-    toolbar.hidden = false;
-  } else {
-    toolbar.hidden = true;
-  };
-};*/
 
 
 //analytics
 
-function send_event(action_event) {
+/*function send_event(action_event) {
   var tab = tabs.activeTab;
   var params = {};
   params["query"] = tab_properties[tab.id]["query"]
@@ -119,22 +122,58 @@ function send_event(action_event) {
   params["nonce"] = Math.floor(Math.random() * Math.pow(2,31));
   //post request to send event
   var req = Request({
-    url: "http://custom-analytics.herokuapp.com/api/v1/is_event",
+    url: "http://analytics.alts.io/api/v1/is_event",
     //url: "http://localhost:3000/api/v1/is_event",
     content: params,
     onComplete: function(response) {
       console.log(response.text);
     }
   }).post();
+}*/
+
+function get_uid() {
+  var req = Request({
+    url : "http://0.0.0.0:3000/new_token",
+    onComplete: function (response) {
+      ss.storage.uid = JSON.parse(response.text).token;
+    }
+  }).get();
 }
 
 
-//main logic
+function send_analytics_event(alts_event, properties) {
+  if (ss.storage.uid != null) {
+    var context = {};
+    context['userAgent'] = httpHandler.userAgent;//'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.90 Safari/537.1';
+    //for mixpanel need to send browser property
+    //properties['Browser'] = "firefox";
+    var params = {};
+    params['userId'] = ss.storage.uid;
+    params['event'] = alts_event;
+    params['properties'] = properties;
+    params['context'] = context;
 
-autocomplete_panel.port.on("select_value", update_query_box);
-autocomplete_panel.port.on("no_ac_results", function() {
-  autocomplete_panel.hide();
-});
+    var req = Request({
+      url: "https://api.segment.io/v1/track",
+      headers: {
+        "Authorization": "Basic NnhjamRlNGI1NA=="
+      },
+      content: params,
+      onComplete: function(response) {
+        console.log("analytics response: " + response.text);
+      }
+    }).post();
+  } else {
+    get_uid();
+    window.setTimeout(function() {
+      send_analytics_event(alts_event, properties);
+    }, timeout);
+    timeout = timeout * 2;
+  };
+};
+
+
+//main logic
 
 function update_query_box(message) {
   search_frame.postMessage({
@@ -146,15 +185,16 @@ function update_query_box(message) {
 function handleFrameEvent(message) {
   switch(message.data.type){
     case "search":
+      var q = message.data.query;
       autocomplete_panel.hide();
-      getUrls(message.data.query, message.source);
+      getUrls(q, message.source);
       message.source.postMessage({
         "type" : "btn-change-next",
-        "query": message.data.query
+        "query": q
       }, message.origin);
       break;
     case "next":
-      next_page();
+      next_page("button");
       break;
     case "autocomplete":
       var q = message.data.query;
@@ -173,7 +213,11 @@ function handleFrameEvent(message) {
 
 function getUrls(query_, source) {
   var query = query_.trim();
-  var url_ = "http://instantsearch.herokuapp.com/s?search=" + query;
+  var url_ = "http://search.alts.io/s?search=" + query;
+  //send_event("search");
+  send_analytics_event("Search", {
+    "Search Query" : query
+  });
 
   var req = Request({
     url: url_,
@@ -192,10 +236,15 @@ function handleResponse(response, tab, query) {
   tab_properties[tab.id]["url_index"] = 0;
   if (urls.length > 0) {
     load_url(0, tab);
+    send_analytics_event("Load URL", {
+      "Origin": "alt-s",
+      "URL": tab_properties[tab.id]["urls"][idx],
+      "Trigger": "search"
+    });
   } else {
     alert_panel.show();
   };
-  send_event("search");
+  
 };
 
 function load_url(idx, tab) {
@@ -224,11 +273,6 @@ function return_tab(tab_id) {
   return null;
 };
 
-
-
-tabs.on('open', onOpen);
-tabs.on('ready', onOpen);
-
 function onOpen(tab) {
   tab.on("activate", tabActivate);
   tab.on("close", tabClose);
@@ -253,10 +297,38 @@ function tabActivate(tab) {
   };
 }
 
+function toolbar_showing(e) {
+  send_analytics_event("Show UI", {
+    "Element": "navbar"
+  });
+}
+
+function toolbar_hiding(e) {
+  send_analytics_event("Hide UI", {
+    "Element": "navbar"
+  });
+}
 
 
+//Main----------------------------------------
+function _main() {
+  if (ss.storage.uid == null) {
+    get_uid();
+  };
+  autocomplete_panel.port.on("select_value", update_query_box);
+  autocomplete_panel.port.on("no_ac_results", function() {
+    autocomplete_panel.hide();
+  });
+  tabs.on('open', onOpen);
+  tabs.on('ready', onOpen);
 
+  toolbar.on("show", toolbar_showing);
+  toolbar.on("hide", toolbar_hiding);
 
+  console.log("main is running");
 
+};
+_main();
+//----------------------------------------------
 
 
