@@ -114,11 +114,12 @@ textarea {
 #searchFormDiv {
     position: fixed;
     margin-top: 3px;
-    float: left;
+    top: 0px;
     width: 35%;
     max-width: 600px;
     z-index: 1;
     margin-left: 3%;
+    left: 40px;
 }
 
 .bar {
@@ -134,6 +135,7 @@ textarea {
 #nextBtnDiv {
     width: 13.4%;
     position: fixed;
+    top: 0px;
     float:left;
     left: 44%;
     z-index: 999;
@@ -141,20 +143,16 @@ textarea {
     margin-top: 3px;
 }
 
-#removeBtnDiv {
 
-    margin-top: 5px;
-    margin-right: 25px;
-    float: right;
-    width: 10px;
-    background: transparent;
-    
-
-}
 #removeToolbarBtn {
     border: none;
     background: transparent;
     color: gray;
+    
+  
+    position: fixed;
+    right: 5px;
+    top: 6px;
 }
 
 .innerButton {
@@ -165,6 +163,11 @@ textarea {
 .ui-widget {
     font-family: arial !important;
     font-size: 1em !important;
+}
+#logo {
+    width: 60px;
+    margin-top: 4px;
+    margin-left: 5px;
 }
 
 #uiSwitchBtn {
@@ -229,7 +232,7 @@ background-image: -webkit-linear-gradient(top, #B0BFB8, #B0BFB8);
   background-image: -ms-linear-gradient(top, #B0BFB8, #B0BFB8);
   background-image: -o-linear-gradient(top, #B0BFB8, #B0BFB8);
   background-image: linear-gradient(to bottom, #B0BFB8, #B0BFB8);
-  
+
   
   -webkit-border-radius: 0;
   -moz-border-radius: 0;

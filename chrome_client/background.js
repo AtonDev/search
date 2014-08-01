@@ -198,7 +198,7 @@ function togglePopup(wndw) {
 
 function initializePopup(wndw) {
   tabStates[id].popupOpen = true; //popup hasnt been loaded already so store window object
-  send_analytics_event('Showed UI', {'Element': 'popup search'});
+  //send_analytics_event('Showed UI', {'Element': 'popup search'});
   wndw.onunload = function() {
     window.setTimeout(function() {
       tabStates[id].popupOpen = false;
@@ -304,7 +304,7 @@ chrome.runtime.onMessage.addListener(
               sendResponse({query: tabState.query, urls: tabState.urls, abstracts: tabState.abstracts,
                            titles: tabState.titles, dispurls: tabState.dispurls, curUrl: tabState.curUrl,
                            xPos: tabState.xPos, yPos: tabState.yPos, visitedSections: tabState.visitedSections});
-              send_analytics_event('Showed UI', {'Element': tabState.uiType});
+              //send_analytics_event('Showed UI', {'Element': tabState.uiType});
               break;
 
           case 'removeToolbar':
