@@ -102,7 +102,7 @@ textarea {
     width: 100%;
     height: 100%;
     position: absolute;
-    background: #e5e5e5;
+    background: #3B403D;
     border-style:solid;
     border-top-width: 0px;
     border-left-width: 0px;
@@ -135,7 +135,7 @@ textarea {
     width: 13.4%;
     position: fixed;
     float:left;
-    left: 40%;
+    left: 44%;
     z-index: 999;
     max-width: 229px;
     margin-top: 3px;
@@ -148,11 +148,12 @@ textarea {
     float: right;
     width: 10px;
     background: transparent;
+    
 
 }
 #removeToolbarBtn {
     border: none;
-    background: #e5e5e5;
+    background: transparent;
     color: gray;
 }
 
@@ -169,21 +170,20 @@ textarea {
 #uiSwitchBtn {
     background: transparent;
     border: none;
-    color: gray;
+    color: lightgray;
     position: fixed;
-    top: 5px;
+    top: 8px;
     right: 50px;
+    font-size: 12px;
 
 }
 
 .nextBtn {
-    -moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-    -webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-    box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5) );
-    background:-moz-linear-gradient( center top, #79bbff 5%, #378de5 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5');
-    background-color:#79bbff;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #B0BFB8;
+    box-shadow:inset 0px 1px 0px 0px #B0BFB8;
+     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+   
+    background-color:#B0BFB8;
     -webkit-border-top-left-radius:0px;
     -moz-border-radius-topleft:0px;
     border-top-left-radius:0px;
@@ -197,7 +197,7 @@ textarea {
     -moz-border-radius-bottomleft:0px;
     border-bottom-left-radius:0px;
     text-indent:0;
-    border:1px solid #84bbf3;
+    border:1px solid #B0BFB8;
     display:inline-block;
     color:#ffffff;
     font-family:Arial;
@@ -212,11 +212,56 @@ textarea {
     text-shadow:1px 1px 0px #528ecc;
 }
 .nextBtn:hover {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #B0BFB8), color-stop(1, #B0BFB8) );
     background:-moz-linear-gradient( center top, #378de5 5%, #79bbff 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff');
     background-color:#378de5;
 }.nextBtn:active {
+    position:relative;
+    top:1px;
+}
+
+
+.nextBtn {
+  background: #dadedd;
+background-image: -webkit-linear-gradient(top, #B0BFB8, #B0BFB8);
+  background-image: -moz-linear-gradient(top, #B0BFB8, #B0BFB8);
+  background-image: -ms-linear-gradient(top, #B0BFB8, #B0BFB8);
+  background-image: -o-linear-gradient(top, #B0BFB8, #B0BFB8);
+  background-image: linear-gradient(to bottom, #B0BFB8, #B0BFB8);
+  
+  
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0px;
+  text-shadow: 1px 1px 3px #666666;
+  -webkit-box-shadow: 0px 1px 3px #666666;
+  -moz-box-shadow: 0px 1px 3px #666666;
+  box-shadow: 0px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  padding: 5px 34px 5px 34px;
+  font-family:Arial;
+  font-size:15px;
+    font-weight:normal;
+    font-style:normal;
+    height:28px;
+    line-height:20px;
+    width:100%;
+    text-decoration:none;
+    text-align:center;
+}
+
+.nextBtn:hover {
+  background: #B0BFB8;
+  background-image: -webkit-linear-gradient(top, #dadedd, #B0BFB8);
+  background-image: -moz-linear-gradient(top, #dadedd, #B0BFB8);
+  background-image: -ms-linear-gradient(top, #dadedd, #B0BFB8);
+  background-image: -o-linear-gradient(top, #dadedd, #B0BFB8);
+  background-image: linear-gradient(to bottom, #dadedd, #B0BFB8);
+  text-decoration: none;
+}
+.nextBtn:active {
     position:relative;
     top:1px;
 }

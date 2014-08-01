@@ -4,6 +4,28 @@ $(document).ready(function(){
     var acHeight = '150';
     var clickedUrl;
     var curUrl;
+    var toggleOn;
+
+    
+    chrome.storage.sync.get('toggleOn', function(items) {
+        toggleOn = items['toggleOn'];
+        if (toggleOn == 'undefined') {
+            toggleOn = true;
+        }
+        //toggleOn = true;
+        console.log('from storage toggleOn = ' + toggleOn);
+        if (!toggleOn) {
+            chrome.runtime.sendMessage({action: "sbToggle"});
+            document.getElementById('sbToggleBtn').innerHTML = "&raquo";
+            toggleHide();
+            //console.log('button set to raquo');
+        } else {
+            document.getElementById('sbToggleBtn').innerHTML = "&laquo";
+            //console.log('button set to laquo. button = ' + document.getElementById('uiSwitchBtn'));
+        }
+    });
+
+    
 
     chrome.runtime.sendMessage({action: "loaded"}, function(response) {
         var query = response.query;
@@ -34,6 +56,20 @@ $(document).ready(function(){
             var sections = document.getElementsByClassName('section');
             console.log('abs: ');
             console.log(abstracts[0]);
+        //    $("html").mouseenter(function() {
+        //        resizeToolbar('large');
+        //    });
+
+        //    $("html").mouseleave(function() {
+        //        resizeToolbar('small');
+        //    }); 
+        //    $("#toolbar").mouseenter(function() {
+        //        resizeToolbar('large');
+        //    });
+
+        //    $("#toolbar").mouseleave(function() {
+        //        resizeToolbar('small');
+        //    }); 
             for (var i = 0; i < h3Title.length; i++) {
                 var aTag = document.createElement("a");
                 var section = sections[i];
@@ -69,6 +105,7 @@ $(document).ready(function(){
                 }else if (visitedSections && section.id in visitedSections) {
                     section.style.background = "#FFFFF0"
                 }
+
                 aTag.onmouseover = function() {
                     console.log("MOUSEOVER: " + this.href);
                     
@@ -102,10 +139,47 @@ $(document).ready(function(){
         chrome.runtime.sendMessage({action: "uiTypeChange"});
     });
 
+    document.getElementById('sbToggleBtn').addEventListener('click', function() {
+        this.blur();
+        toggleOn = !toggleOn;
+        var curVal = document.getElementById('sbToggleBtn').innerHTML;
+        console.log('curVal = ' + curVal);
+        if (!toggleOn) {
+            console.log('INSIDE IF');
+            toggleHide();
+            document.getElementById('sbToggleBtn').innerHTML = "&raquo";
+        }else {
+            document.getElementById('sbToggleBtn').innerHTML = "&laquo";
+            console.log('OUTSIDE IF');
+            toggleShow();
+        }
+        chrome.storage.sync.set({'toggleOn': toggleOn}, function() {
+          // Notify that we saved.
+          console.log('Settings saved toggleOn now: ' +toggleOn);
+        });
+        chrome.runtime.sendMessage({action: "sbToggle"});
+    });
+
     function resizeToolbar(size) {
-      chrome.runtime.sendMessage({action: "resizeToolbar", size: size});
+        if (toggleOn == true) 
+            chrome.runtime.sendMessage({action: "resizeToolbar", size: size});
     }
 
+    function toggleHide() {
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('toolbar').style.display = 'none';
+        document.getElementById('logo').style.display = 'none';
+        document.getElementById('uiSwitchBtn').style.display = 'none';
+        document.getElementById('removeToolbarBtn').style.display = 'none';
+    }
+
+    function toggleShow() {
+        document.getElementById('results').style.display = 'initial';
+        document.getElementById('toolbar').style.display = 'initial';
+        document.getElementById('logo').style.display = 'initial';
+        document.getElementById('uiSwitchBtn').style.display = 'initial';
+        document.getElementById('removeToolbarBtn').style.display = 'initial';
+    }
 
     $("#searchBox").autocomplete({
         source: function(request, response) {

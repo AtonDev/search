@@ -1,5 +1,7 @@
 var toolbarHeight = '400';
+var minHeight = '33';
 var newCssText = "margin-left: " + toolbarHeight + "px !important";
+var minCssText = "margin-left: " + minHeight + "px !important";
 //document.body.style.position = "relative"; 
 var newIframe = document.createElement('iframe');
 newIframe.width = toolbarHeight + 'px';
@@ -23,13 +25,13 @@ $(document).ready(function() {
 	init();
 });
 
-function moveElementsByTag(tag, change) {
+function moveElementsByTag(tag, change, force) {
 	var elements = document.getElementsByTagName(tag);
 	if (window == window.top)
 	   console.log("ELEMENTS: " + elements.length); 
 	for (var elNum = 0; elNum < elements.length; elNum++){
 		var el = elements[elNum];
-		if (el.moved != true && el.id != 'placeHolderDiv') {
+		if ((force == true || el.moved != true) && el.id != 'placeHolderDiv') {
 			var elStyle = window.getComputedStyle(el);
 			if (elStyle.position == "fixed"){
 				var left = elStyle.left;
@@ -41,26 +43,15 @@ function moveElementsByTag(tag, change) {
 	}
 }
 
-function moveFixedElements(change) {
-	moveElementsByTag("div", change);
-	moveElementsByTag("header", change);
+function moveFixedElements(change, force) {
+	console.log("move fixed elements with change = " + change);
+	 moveElementsByTag("div", change, force);
+	 moveElementsByTag("header", change, force);
 	//moveElementsByTag("nav", change);  //this seems to do more harm than good.
 }
 
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-    	//console.log("received message: " + request.action)
-        if (request.action == "removeToolbar")
- 			removeToolbar(); 
- 		else if(request.action == "loadToolbar") {
- 		//    init();    
- 		//    console.log('init finished');
- 		}else if(request.action == 'resizeToolbar') {
- 			newIframe.style.width = request.size + 'px';
- 		}
-    }
-);    
+
 
 function initializeHeadroom(tag) {
 	var elements = document.getElementsByTagName(tag); //might need to add "header" tag
@@ -74,13 +65,33 @@ function initializeHeadroom(tag) {
 	}
 }		
 
+function moveSidebar(size) {
+	var sidebar = document.getElementById(newIframe.id);
+	var newText, oldText, cssText;
+	if (size == 'small'){
+		console.log('large to small');
+		moveFixedElements((toolbarHeight - minHeight) *-1, true);
+		cssText = document.body.style.cssText;
+	    cssText = cssText.replace(newCssText, minCssText);
+	    sidebar.width = minHeight + 'px';
+	}else if (size == 'large'){
+		console.log('small to large');
+		moveFixedElements((toolbarHeight - minHeight), true);
+		cssText = document.body.style.cssText;
+	    cssText = cssText.replace(minCssText, newCssText);
+	    sidebar.width = toolbarHeight + 'px';
+	}
+	document.body.style.cssText = cssText;
+}
+
 function removeToolbar() {
 	var toolbar = document.getElementById(newIframe.id);
 	if (toolbar) {
+		console.log("INSIDE IF OF REMOVE TOOLBAR");
 	    toolbar.parentNode.removeChild(toolbar);
-	    moveFixedElements(toolbarHeight * -1);
+	    moveFixedElements(toolbarHeight * -1, true);
 	}
-	cssText = document.body.style.cssText;
+	var cssText = document.body.style.cssText;
 	cssText = cssText.replace(newCssText, "margin-left: 0px");
 	document.body.style.cssText = cssText;
 }
@@ -121,6 +132,8 @@ function getTabState() {
 }
 
 function init() {
+	if (!document.getElementById('searchToolbar')) {  //if iframe doesnt already exist
+		console.log('init called on window.top');
 	//	getTabState();
 	document.body.style.position = "relative"; 
 	newIframe.src = chrome.extension.getURL("sidebar.html");
@@ -132,6 +145,32 @@ function init() {
 	//	var placeHolderDiv = document.getElementById('placeHolderDiv');
 	   // placeHolderDiv.parentNode.removeChild(placeHolderDiv);
 //	}, 1000);
+
+	chrome.runtime.onMessage.addListener(
+	    function(request, sender, sendResponse) {
+	    	//console.log("received message: " + request.action)
+	    	console.log("MESSAGE RECEIVED FROM: " + sender.tab + " " + sender.id + (window == window.top))
+	        if (request.action == "removeToolbar") {
+	        	console.log("remove toolbar");
+	 			removeToolbar(); 
+	 		}
+	 		else if(request.action == "resizeToolbar") {
+	 			var size = request.size;
+	 			var sidebar = document.getElementById(newIframe.id);
+	 			if ((size == 'large') && sidebar.width == minHeight + 'px') { //sidebar small so make it large
+	 				sidebar.width = toolbarHeight + 'px';
+	 			}else if ((size == 'small') && sidebar.width == toolbarHeight + 'px') {//sidebar large so make it small
+	 				sidebar.width = minHeight + 'px';
+	 			}
+	 		}else if(request.action == 'toggleSidebar') {
+	 			var sidebar = document.getElementById(newIframe.id);
+	 			if (sidebar.width == toolbarHeight + 'px') {
+	 				console.log("INSIDE TOGGLE TOOLBAR");
+	 				moveSidebar('small');
+	 			}else moveSidebar('large');
+	 		}
+	    }
+	);    
 	
 	chrome.runtime.sendMessage({action: "getNext"}, function(response) {
 		if (response.next != "none") {
@@ -145,6 +184,7 @@ function init() {
 //	headroom.init();
 //	initializeHeadroom('div');
 //	initializeHeadroom('header');
+    }
 }
 
 

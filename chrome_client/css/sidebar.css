@@ -5,20 +5,20 @@ html {
 	
 }
 
-body {
-	height:100%;
-	background:white;
+html, body {
+	min-height:100%;
+	background: #3B403D;
 }
 
 
 #container {
 
   border-style: solid;
-  border-color: #1B5790;
+  border-color: #3B403D;;
   border-right: 0px;
   border-top: 0px;
   border-bottom: 0px;
-  height: 100%;
+  min-height:100%;
 }
 
 h3 {
@@ -40,10 +40,10 @@ h3.hover {
 
 #removeBtnDiv {
 	position: absolute;
-    right: 20px;
-    float: right;
+    left: 3px;
+    float: left;
     width: 10px;
-    top: 5px;
+    top: 3px;
 }
 
 #removeToolbarBtn {
@@ -55,7 +55,7 @@ h3.hover {
 	border-style: solid;
 	border-color: lightgray;
 	border-top-style: none;
-	border-left-color: #1B5790;
+	border-left-color: #3B403D;;
 	padding-top: 10px;
 	padding-bottom: 20px;
 	margin-left: 0px;
@@ -66,9 +66,7 @@ h3.hover {
 	background: #FFFFFE;
 }
 
-.section:hover {
-	background: #cfe4ad;
-}
+
 
 .content {	
 	padding-left: 20px;
@@ -76,47 +74,29 @@ h3.hover {
 	z-index: 100;
 }
 
-#toolbar {
-	height: 50px;
-	width: 100%;
-	background: #b2d281;
-	top: 70px;
-	position:fixed;
-	z-index: 101;
-	left:0px;
-	border-style:solid;
-	border-right:0px;
-	border-top:0px;
-	border-bottom:0px;
-	border-color: #1B5790
-}
+
 
 #searchFormDiv {
-	padding-top: 10px;
+	padding-top: 5px;
 }
 
 #searchBox {
 	height: 25px;
-	width: 100%;
+	width: 350px;
 
 }
 
 #logo {
-	margin:0px;
-	padding-top: 15px;
+	
+	
 	text-align:center;
 	font-size: 2em;
 	color:white;
 	font-family: verdana;
+
+
 }
-#logoContainer {
-	background: #1B5790;
-	height: 70px;
-	width:100%;
-	position:fixed;
-	z-index: 101;
-	left:0px;
-}
+
 
 .abstract {
 	font-size:small;
@@ -125,7 +105,7 @@ h3.hover {
 
 #results {
 	position:absolute;
-	top: 120px;
+	top: 91px;
 	left: 0px;
 	z-index: 100;
 	width:100%;
@@ -133,7 +113,7 @@ h3.hover {
 }
 
 .curSection {
-	border-left-color: #1B5790;
+	border-left-color: #3B403D;;
 	padding-left: 20px;
 }
 
@@ -142,6 +122,55 @@ h3.hover {
 	border: none;
 	color: lightgray;
 	position: fixed;
-	top: 5px;
+	top: 30px;
+	left: 3px;
+	font-size: 12px;
+}
+#sbToggleBtn {
+	background: transparent;
+	border: none;
+	color: lightgray;
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	font-size: 40px;
 
+}
+
+#logoContainer {
+	display: block;
+	height: 50px;
+	width:100%;
+	position:fixed;
+	z-index: 101;
+	background: #3B403D;
+	text-align: center;
+	border-color: #3B403D;
+	left:0px;
+}
+
+#toolbar {
+	height: 40px;
+	width: 100%;
+	background: #B0BFB8;
+	top: 50px;
+	position:fixed;
+	z-index: 101;
+	left:0px;
+	border-style:solid;
+	border-right:0px;
+	border-top:0px;
+	border-bottom-width: 1px;
+	border-color: #3B403D;
+	border-bottom-color: #B0B0B0;
+}
+
+.section:hover {
+	background: #EAFFF6;
+}
+
+.ui-widget {
+    font-family: arial !important;
+    font-size: 1em !important;
+    z-index: 200;
 }
