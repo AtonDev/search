@@ -1,32 +1,27 @@
 html {
-
 	
-	overflow: scroll;
-	
-}
-
-html, body {
-	min-height:100%;
 	background: #3B403D;
+	overflow: scroll;
+	margin: 0px;
 }
 
-
-#container {
-
+body {
   border-style: solid;
   border-color: #3B403D;;
   border-right: 0px;
   border-top: 0px;
   border-bottom: 0px;
-  min-height:100%;
+  bottom: 0;
+
 }
+
+
+
 
 h3 {
 	margin:0px;
 	font-size: 1em;
-	
 	font-weight: normal;
-
 }
 
 span {
@@ -39,9 +34,9 @@ h3.hover {
 }
 
 #removeBtnDiv {
-	position: absolute;
+	position: fixed;
     left: 3px;
-    float: left;
+
     width: 10px;
     top: 3px;
 }
@@ -51,6 +46,7 @@ h3.hover {
 	border: none;
 	color: gray;
 }
+
 .section {	
 	border-style: solid;
 	border-color: lightgray;
@@ -83,18 +79,13 @@ h3.hover {
 #searchBox {
 	height: 25px;
 	width: 350px;
-
 }
 
 #logo {
-	
-	
 	text-align:center;
 	font-size: 2em;
 	color:white;
 	font-family: verdana;
-
-
 }
 
 
@@ -104,7 +95,7 @@ h3.hover {
 }
 
 #results {
-	position:absolute;
+	padding-top: 92px;
 	top: 91px;
 	left: 0px;
 	z-index: 100;
@@ -134,7 +125,6 @@ h3.hover {
 	top: 0px;
 	right: 0px;
 	font-size: 40px;
-
 }
 
 #logoContainer {

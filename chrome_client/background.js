@@ -110,6 +110,7 @@ function submitToServer(tabId, query, origin) {
         var firstURL = urls[0];
         tabStates[tabId].urls = urls; 
         tabStates[tabId].idx = 0;   
+        tabStates[id].curUrl = firstURL;
         chrome.tabs.update(tabId, {active: true, url: firstURL}); 
         var titles = JSON.parse(xhr.responseText).titles;
         var abstracts = JSON.parse(xhr.responseText).abstracts;
@@ -117,9 +118,7 @@ function submitToServer(tabId, query, origin) {
         tabStates[tabId].titles = titles;
         tabStates[tabId].abstracts = abstracts;
         tabStates[tabId].dispurls = dispurls;
-        console.log('title: ' + titles[0]);
-        console.log('abstract: ' + abstracts[0]);
-        console.log('dispurl: ' + dispurls[0]);
+        
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
   }

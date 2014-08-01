@@ -46,30 +46,13 @@ $(document).ready(function(){
             }else console.log("NOT SCROLLING");
             console.log('xPos: ' + xPos + ' yPos: ' + yPos);
 
-
-          //  document.getElementById('next').addEventListener('click', function() {
-           //     chrome.runtime.sendMessage({action: "next"});
-           // })
             var h3Title = document.getElementsByClassName('title');
             var dUrls = document.getElementsByClassName('dispurl');
             var abs = document.getElementsByClassName('abstract');
             var sections = document.getElementsByClassName('section');
             console.log('abs: ');
             console.log(abstracts[0]);
-        //    $("html").mouseenter(function() {
-        //        resizeToolbar('large');
-        //    });
 
-        //    $("html").mouseleave(function() {
-        //        resizeToolbar('small');
-        //    }); 
-        //    $("#toolbar").mouseenter(function() {
-        //        resizeToolbar('large');
-        //    });
-
-        //    $("#toolbar").mouseleave(function() {
-        //        resizeToolbar('small');
-        //    }); 
             for (var i = 0; i < h3Title.length; i++) {
                 var aTag = document.createElement("a");
                 var section = sections[i];
@@ -94,21 +77,8 @@ $(document).ready(function(){
                     section.style.borderTopWidth = "3px";
                     section.style.background = "#FFFFFB"
                     aTag.style.color = "#1B5790";
-
-//                    aTag.style.
-                    //section.focus();
-                    
-                 //   section.style.border = "0px";
-                  //  section.style.border
-
-                    //sections[i].className = sections[i].className + " curSection";
                 }else if (visitedSections && section.id in visitedSections) {
                     section.style.background = "#FFFFF0"
-                }
-
-                aTag.onmouseover = function() {
-                    console.log("MOUSEOVER: " + this.href);
-                    
                 }
 
                 sections[i].addEventListener('click', function(event) {
