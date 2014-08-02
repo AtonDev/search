@@ -13,7 +13,8 @@ newIframe.style.top = "0px";
 newIframe.style.left = "0px";
 newIframe.style.margin = "0px";
 newIframe.style.zIndex = "99999999999999999";
-
+newIframe.onmouseover = function() {document.body.style.overflow='hidden'};
+newIframe.onmouseout= function() {document.body.style.overflow='auto'};
 var preFrameZIndex = "999999999999";
 var cntrl = false;
 var s = false;
