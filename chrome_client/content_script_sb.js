@@ -13,6 +13,7 @@ newIframe.style.top = "0px";
 newIframe.style.left = "0px";
 newIframe.style.margin = "0px";
 newIframe.style.zIndex = "99999999999999999";
+
 var preFrameZIndex = "999999999999";
 var cntrl = false;
 var s = false;
@@ -21,14 +22,11 @@ var firstTime = true;
 
 makeSpace(timeout);
 $(document).ready(function() { 
-//	console.log ('moveFixedElements called on DOM ready');		
 	init();
 });
 
 function moveElementsByTag(tag, change, force) {
 	var elements = document.getElementsByTagName(tag);
-	if (window == window.top)
-	   console.log("ELEMENTS: " + elements.length); 
 	for (var elNum = 0; elNum < elements.length; elNum++){
 		var el = elements[elNum];
 		if ((force == true || el.moved != true) && el.id != 'placeHolderDiv') {
@@ -44,7 +42,6 @@ function moveElementsByTag(tag, change, force) {
 }
 
 function moveFixedElements(change, force) {
-	console.log("move fixed elements with change = " + change);
 	 moveElementsByTag("div", change, force);
 	 moveElementsByTag("header", change, force);
 	//moveElementsByTag("nav", change);  //this seems to do more harm than good.
@@ -69,13 +66,11 @@ function moveSidebar(size) {
 	var sidebar = document.getElementById(newIframe.id);
 	var newText, oldText, cssText;
 	if (size == 'small'){
-		console.log('large to small');
 		moveFixedElements((toolbarHeight - minHeight) *-1, true);
 		cssText = document.body.style.cssText;
 	    cssText = cssText.replace(newCssText, minCssText);
 	    sidebar.width = minHeight + 'px';
 	}else if (size == 'large'){
-		console.log('small to large');
 		moveFixedElements((toolbarHeight - minHeight), true);
 		cssText = document.body.style.cssText;
 	    cssText = cssText.replace(minCssText, newCssText);
@@ -87,7 +82,6 @@ function moveSidebar(size) {
 function removeToolbar() {
 	var toolbar = document.getElementById(newIframe.id);
 	if (toolbar) {
-		console.log("INSIDE IF OF REMOVE TOOLBAR");
 	    toolbar.parentNode.removeChild(toolbar);
 	    moveFixedElements(toolbarHeight * -1, true);
 	}
@@ -96,94 +90,48 @@ function removeToolbar() {
 	document.body.style.cssText = cssText;
 }
 
-function getTabState() {
-	//console.log(this + "calling tab state");
-	chrome.runtime.sendMessage({action: "getTabState"}, function(response) {
-		//console.log('response: ' + response.state + " " + response.query);
-		if (response.state == 'on') {
-			if (response.query == '') {
-				//no query has been made, so load toolbar without next button
-//				newIframe.src = chrome.extension.getURL("toolbarInitial.html");
-			}else {
-				//load toolbar with next button
-				document.body.style.position = "relative"; 
-				newIframe.src = chrome.extension.getURL("toolbar.html");
-				document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
-		//		console.log("moveFixedElements in getTabState");
-				moveFixedElements(toolbarHeight);
-				document.body.insertBefore(newIframe, document.body.firstChild);
-				window.setTimeout(function() {
-					var placeHolderDiv = document.getElementById('placeHolderDiv');
-				    placeHolderDiv.parentNode.removeChild(placeHolderDiv);
-				}, 1000);
-				
-				if (response.next != "none") {
-					var nextPage = document.createElement("link");
-					nextPage.rel = "prerender";
-					nextPage.href = response.next;
-					document.getElementsByTagName("head")[0].appendChild(nextPage);
-				}
-			}
-		
-			var headroom = new Headroom(newIframe);
-			headroom.init();
-	    } 
-	});
-}
-
 function init() {
 	if (!document.getElementById('searchToolbar')) {  //if iframe doesnt already exist
-		console.log('init called on window.top');
-	//	getTabState();
-	document.body.style.position = "relative"; 
-	newIframe.src = chrome.extension.getURL("sidebar.html");
-	document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
-//		console.log("moveFixedElements in getTabState");
-	moveFixedElements(toolbarHeight);
-	document.body.insertBefore(newIframe, document.body.firstChild);
-//	window.setTimeout(function() {
-	//	var placeHolderDiv = document.getElementById('placeHolderDiv');
-	   // placeHolderDiv.parentNode.removeChild(placeHolderDiv);
-//	}, 1000);
+		document.body.style.position = "relative"; 
+		newIframe.src = chrome.extension.getURL("sidebar.html");
+		document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
+		moveFixedElements(toolbarHeight);
+		document.body.insertBefore(newIframe, document.body.firstChild);
+	//	window.setTimeout(function() {
+		//	var placeHolderDiv = document.getElementById('placeHolderDiv');
+		   // placeHolderDiv.parentNode.removeChild(placeHolderDiv);
+	//	}, 1000);
 
-	chrome.runtime.onMessage.addListener(
-	    function(request, sender, sendResponse) {
-	    	//console.log("received message: " + request.action)
-	    	console.log("MESSAGE RECEIVED FROM: " + sender.tab + " " + sender.id + (window == window.top))
-	        if (request.action == "removeToolbar") {
-	        	console.log("remove toolbar");
-	 			removeToolbar(); 
-	 		}
-	 		else if(request.action == "resizeToolbar") {
-	 			var size = request.size;
-	 			var sidebar = document.getElementById(newIframe.id);
-	 			if ((size == 'large') && sidebar.width == minHeight + 'px') { //sidebar small so make it large
-	 				sidebar.width = toolbarHeight + 'px';
-	 			}else if ((size == 'small') && sidebar.width == toolbarHeight + 'px') {//sidebar large so make it small
-	 				sidebar.width = minHeight + 'px';
-	 			}
-	 		}else if(request.action == 'toggleSidebar') {
-	 			var sidebar = document.getElementById(newIframe.id);
-	 			if (sidebar.width == toolbarHeight + 'px') {
-	 				console.log("INSIDE TOGGLE TOOLBAR");
-	 				moveSidebar('small');
-	 			}else moveSidebar('large');
-	 		}
-	    }
-	);    
-	
-	chrome.runtime.sendMessage({action: "getNext"}, function(response) {
-		if (response.next != "none") {
-			var nextPage = document.createElement("link");
-			nextPage.rel = "prerender";
-			nextPage.href = response.next;
-			document.getElementsByTagName("head")[0].appendChild(nextPage);
-		}
-	});
-//	var headroom = new Headroom(newIframe);
-//	headroom.init();
-//	initializeHeadroom('div');
-//	initializeHeadroom('header');
+		chrome.runtime.onMessage.addListener(
+		    function(request, sender, sendResponse) {
+		        if (request.action == "removeToolbar") {
+		 			removeToolbar(); 
+		 		}
+		 		else if(request.action == "resizeToolbar") {
+		 			var size = request.size;
+		 			var sidebar = document.getElementById(newIframe.id);
+		 			if ((size == 'large') && sidebar.width == minHeight + 'px') { //sidebar small so make it large
+		 				sidebar.width = toolbarHeight + 'px';
+		 			}else if ((size == 'small') && sidebar.width == toolbarHeight + 'px') {//sidebar large so make it small
+		 				sidebar.width = minHeight + 'px';
+		 			}
+		 		}else if(request.action == 'toggleSidebar') {
+		 			var sidebar = document.getElementById(newIframe.id);
+		 			if (sidebar.width == toolbarHeight + 'px') {
+		 				moveSidebar('small');
+		 			}else moveSidebar('large');
+		 		}
+		    }
+		);    
+		
+		chrome.runtime.sendMessage({action: "getNext"}, function(response) {
+			if (response.next != "none") {
+				var nextPage = document.createElement("link");
+				nextPage.rel = "prerender";
+				nextPage.href = response.next;
+				document.getElementsByTagName("head")[0].appendChild(nextPage);
+			}
+		});
     }
 }
 
@@ -192,11 +140,8 @@ function init() {
 
 //create space above body before dom ready has fired
 function makeSpace(wait) {
-	//console.log('MAKESPACE() CALLED');
 	if (firstTime) {
-		//console.log("INSIDE FIRST TIME");
 		window.addEventListener("load", function() {
-	//	   console.log("moveFixedElements in window load event");
            moveFixedElements(toolbarHeight);
         }, false);
 
@@ -225,11 +170,9 @@ function makeSpace(wait) {
 	}
 
 	if(document.body) {		
-        console.log("moveFixedElements in document body if");
 		moveFixedElements(toolbarHeight);
 	}else {
 	    // The body hasn't been created yet, wait for it.
-	    console.log("SET TIMOUT");
 	    window.setTimeout(function() {
 	        makeSpace(timeout);
 	    }, wait);

@@ -12,93 +12,101 @@ $(document).ready(function(){
         if (toggleOn == 'undefined') {
             toggleOn = true;
         }
-        //toggleOn = true;
-        console.log('from storage toggleOn = ' + toggleOn);
         if (!toggleOn) {
             chrome.runtime.sendMessage({action: "sbToggle"});
             document.getElementById('sbToggleBtn').innerHTML = "&raquo";
             toggleHide();
-            //console.log('button set to raquo');
         } else {
             document.getElementById('sbToggleBtn').innerHTML = "&laquo";
-            //console.log('button set to laquo. button = ' + document.getElementById('uiSwitchBtn'));
         }
     });
+
+   
+
+    function loadResults(titles, abstracts, dispurls, urls, curUrl) {
+        console.log("START LOADRESULTS");
+        for (var i = 0; i < titles.length; i++) {
+            var section = document.createElement('div');
+            var content = document.createElement('div');
+            var title = document.createElement('h3');
+            var dispurl = document.createElement('span');
+            var abstract = document.createElement('p');
+            section.className = 'section';
+            content.className = 'content';
+            title.className = 'title';
+            dispurl.className = 'dispurl';
+            abstract.className = 'abstract';
+            
+            content.appendChild(title);
+            content.appendChild(dispurl);
+            content.appendChild(abstract);
+            section.appendChild(content);
+            document.getElementById('results').appendChild(section);
+
+
+            var aTag = document.createElement("a");
+            aTag.style.textDecoration = 'none';
+            aTag.href = urls[i];
+            aTag.innerHTML = titles[i];
+
+            title.appendChild(aTag);
+            
+            dispurl.innerHTML = dispurls[i];
+            abstract.innerHTML = abstracts[i];
+            section.href = urls[i];
+            aTag.style.color = "#1a0dab";
+            //console.log('visitedSEctions: ' + visitedSections);
+            if (curUrl == urls[i]) {
+                section.style.borderTopStyle = "solid";
+                section.style.borderRightStyle = "none";
+                section.style.borderBottomWidth = "5px";
+                section.style.borderLeftWidth = "10px";
+                section.style.borderTopWidth = "3px";
+                section.style.background = "#FFFFFB"
+                aTag.style.color = "#1B5790";
+            }//else if (visitedSections && section.id in visitedSections) {
+               // section.style.background = "#FFFFF0"
+           // }
+
+            section.addEventListener('click', function(event) {
+                event.preventDefault();
+                var id = this.id;
+                curUrl = this.href
+                var xPos = document.body.scrollLeft;
+                var yPos = document.body.scrollTop;
+                chrome.runtime.sendMessage({action: "linkClicked", url: curUrl, id: id, xPos: xPos, yPos: yPos});
+             });
+
+        }
+        console.log("FINISH LOADRESULTS");
+    }
 
     
 
     chrome.runtime.sendMessage({action: "loaded"}, function(response) {
-        var query = response.query;
-        var titles = response.titles;
-        var abstracts = response.abstracts;
-        var dispurls = response.dispurls;
-        var urls = response.urls;
         var visitedSections;
+        var query = response.query;
         if (query != '') {
+
             document.getElementById('searchBox').value = response.query;
             visitedSections = response.visitedSections
             var xPos = response.xPos;
             var yPos = response.yPos;
             
-            if (xPos != 'undefined' && yPos != 'undefined') {
+            loadResults(response.titles, response.abstracts, response.dispurls, response.urls, response.curUrl);
+             $(window).scroll(function () {
+                if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
+                    loadResults();
+                }
+            });
+
+            if (xPos != 'undefined' && yPos != 'undefined')
                 window.scrollTo(xPos, yPos);
-                console.log ('SCROLLING');
-            }else console.log("NOT SCROLLING");
-            console.log('xPos: ' + xPos + ' yPos: ' + yPos);
 
             window.onload = function() {
-                if (xPos != 'undefined' && yPos != 'undefined') {
+                if (xPos != 'undefined' && yPos != 'undefined')
                     window.scrollTo(xPos, yPos);
-                    console.log ('SCROLLING');
-                }else console.log("NOT SCROLLING");
             }
-
-            var h3Title = document.getElementsByClassName('title');
-            var dUrls = document.getElementsByClassName('dispurl');
-            var abs = document.getElementsByClassName('abstract');
-            var sections = document.getElementsByClassName('section');
-            console.log('abs: ');
-            console.log(abstracts[0]);
-
-            for (var i = 0; i < h3Title.length; i++) {
-                var aTag = document.createElement("a");
-                var section = sections[i];
-                var h3 = h3Title[i];
-                aTag.style.textDecoration = 'none';
-                aTag.href = urls[i];
-                aTag.innerHTML = titles[i];
-
-                h3.appendChild(aTag);
-                
-                dUrls[i].innerHTML = dispurls[i];
-                abs[i].innerHTML = abstracts[i];
-                sections[i].href = urls[i];
-                aTag.style.color = "#1a0dab";
-                console.log('visitedSEctions: ' + visitedSections);
-                if (response.curUrl == urls[i]) {
-                    console.log("URLS MATCH");
-                    section.style.borderTopStyle = "solid";
-                    section.style.borderRightStyle = "none";
-                    section.style.borderBottomWidth = "5px";
-                    section.style.borderLeftWidth = "10px";
-                    section.style.borderTopWidth = "3px";
-                    section.style.background = "#FFFFFB"
-                    aTag.style.color = "#1B5790";
-                }else if (visitedSections && section.id in visitedSections) {
-                    section.style.background = "#FFFFF0"
-                }
-
-                sections[i].addEventListener('click', function(event) {
-                    event.preventDefault();
-                    var id = this.id;
-                    curUrl = this.href
-                    var xPos = document.body.scrollLeft;
-                    var yPos = document.body.scrollTop;
-                    console.log('in click listener xPos: ' + xPos + ' yPos: ' + yPos);
-                    chrome.runtime.sendMessage({action: "linkClicked", url: curUrl, id: id, xPos: xPos, yPos: yPos});
-                 });
-            }
-
         }
     });
 
@@ -120,20 +128,14 @@ $(document).ready(function(){
         this.blur();
         toggleOn = !toggleOn;
         var curVal = document.getElementById('sbToggleBtn').innerHTML;
-        console.log('curVal = ' + curVal);
         if (!toggleOn) {
-            console.log('INSIDE IF');
             toggleHide();
             document.getElementById('sbToggleBtn').innerHTML = "&raquo";
         }else {
             document.getElementById('sbToggleBtn').innerHTML = "&laquo";
-            console.log('OUTSIDE IF');
             toggleShow();
         }
-        chrome.storage.sync.set({'toggleOn': toggleOn}, function() {
-          // Notify that we saved.
-          console.log('Settings saved toggleOn now: ' +toggleOn);
-        });
+        chrome.storage.sync.set({'toggleOn': toggleOn}, function() {});
         chrome.runtime.sendMessage({action: "sbToggle"});
     });
 
