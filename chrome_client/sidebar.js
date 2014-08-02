@@ -39,12 +39,19 @@ $(document).ready(function(){
             visitedSections = response.visitedSections
             var xPos = response.xPos;
             var yPos = response.yPos;
-
+            
             if (xPos != 'undefined' && yPos != 'undefined') {
                 window.scrollTo(xPos, yPos);
                 console.log ('SCROLLING');
             }else console.log("NOT SCROLLING");
             console.log('xPos: ' + xPos + ' yPos: ' + yPos);
+
+            window.onload = function() {
+                if (xPos != 'undefined' && yPos != 'undefined') {
+                    window.scrollTo(xPos, yPos);
+                    console.log ('SCROLLING');
+                }else console.log("NOT SCROLLING");
+            }
 
             var h3Title = document.getElementsByClassName('title');
             var dUrls = document.getElementsByClassName('dispurl');
