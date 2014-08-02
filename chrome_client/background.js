@@ -118,6 +118,8 @@ function submitToServer(tabId, query, origin) {
         tabStates[tabId].titles = titles;
         tabStates[tabId].abstracts = abstracts;
         tabStates[tabId].dispurls = dispurls;
+        tabStates[tabId].xPos = 0;
+        tabStates[tabId].yPos = 0;
         
       }else console.log("no 200 status");
     }else console.log("readyState not 4 instead: " + xhr.readyState);      
