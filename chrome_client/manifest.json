@@ -3,7 +3,7 @@
 
   "name": "alt-s",
   "description": "An alternative way to search the web.",
-  "version": "0.1.6",
+  "version": "0.1.9",
 
   "permissions": [
      "http://*/*",
@@ -38,15 +38,6 @@
   "commands": {
     "_execute_browser_action" : {
       "suggested_key": { "default": "Alt+S" }
-  },
-
-  "nextPage": {
-    "suggested_key": { "default": "Alt+Right" },
-    "description": "Moves to the next search result"
-  },
-    "prevPage": {
-      "suggested_key": { "default": "Alt+Left" },
-      "description": "Moves back to the previous search result"
     }
   }
 }

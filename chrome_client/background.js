@@ -20,6 +20,7 @@ function get_uid() {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
         segToken = JSON.parse(xhr.responseText).token;
+        send_analytics_event('Token Created', {});
         console.log('new token received, token: ' + segToken);
         store_token(segToken);
       }else console.log("no 200 status");
@@ -57,7 +58,7 @@ function send_analytics_event(alts_event, properties) {
     params['properties'] = properties;
     params['context'] = context;
     xhr.open('POST', url, true);
-    xhr.setRequestHeader('Authorization', 'Basic MmJpdWs5ZnA1eA==');//    NnhjamRlNGI1NA==
+    xhr.setRequestHeader('Authorization', 'Basic MmJpdWs5ZnA1eA==');//     NnhjamRlNGI1NA==
     xhr.setRequestHeader('Content-Type', 'application/json');
     var paramsJson = JSON.stringify(params);
     xhr.onreadystatechange = function() {
@@ -163,6 +164,7 @@ function executeSearch(id, query) {
 
 function searchHelper(id, query, origin) {
   tabStates[id].query = query;
+  tabStates[id].toggleOn = true;
   submitToServer(id, query, origin);   
   //submitAnalytics(id, 'search', query);
 }
@@ -173,6 +175,7 @@ function initializeTab(id) {
   tabState.query = '';
   tabState.uiType = 'sidebar';
   tabState.popupOpen = false;
+  tabState.toggleOn = true;
   tabStates[id] = tabState;
 }
 
@@ -224,25 +227,32 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   console.log('inside onUpdated ' + changeInfo.status);
   if (tabId in tabStates && changeInfo.status == 'loading')
     if (tabStates[tabId].injecting != true && tabStates[tabId].query != '') {
-           // tabStates[tabId].injecting = true;
-            var injectDetails = new Object();
-            var tabState = tabStates[tabId];
-            injectDetails.runAt = "document_start";
+     // tabStates[tabId].injecting = true;
+      var injectDetails = new Object();
+      var tabState = tabStates[tabId];
+      injectDetails.runAt = "document_start";
 
-            injectDetails.file = 'headroom.js';
-            chrome.tabs.executeScript(tabId, injectDetails);
+      injectDetails.file = 'headroom.js';
+      chrome.tabs.executeScript(tabId, injectDetails);
 
-            injectDetails.file = 'jquery-1.11.1.min.js';
-            chrome.tabs.executeScript(tabId, injectDetails);
+      injectDetails.file = 'jquery-1.11.1.min.js';
+      chrome.tabs.executeScript(tabId, injectDetails);
 
-            if (tabState.uiType == "sidebar") {
-              injectDetails.file = 'content_script_sb.js';
-            } else injectDetails.file = 'content_script_nb.js';
-            console.log("INJECTING CONTENT SCRIPT");
-            chrome.tabs.executeScript(tabId, injectDetails);
-            window.setTimeout(function() {
-              injecting = false;
-             }, 10);
+      var injectCode = {runAt: "document_start"};
+      if (tabState.toggleOn)
+        injectCode.code = "var toggleOn = true";      
+      else 
+        injectCode.code = "var toggleOn = false";
+      chrome.tabs.executeScript(tabId, injectCode);
+
+      if (tabState.uiType == "sidebar") {
+        injectDetails.file = 'content_script_sb.js';
+      } else injectDetails.file = 'content_script_nb.js';
+      console.log("INJECTING CONTENT SCRIPT");
+      chrome.tabs.executeScript(tabId, injectDetails);
+      window.setTimeout(function() {
+        injecting = false;
+       }, 10);
       }
 });
 
@@ -303,7 +313,7 @@ chrome.runtime.onMessage.addListener(
               break;
 
           case 'loaded': //TODO add timeout if newtab's onCreated hasn't fired yet so tabState can be created first
-              sendResponse({query: tabState.query, urls: tabState.urls, abstracts: tabState.abstracts,
+              sendResponse({toggleOn: tabState.toggleOn, query: tabState.query, urls: tabState.urls, abstracts: tabState.abstracts,
                            titles: tabState.titles, dispurls: tabState.dispurls, curUrl: tabState.curUrl,
                            xPos: tabState.xPos, yPos: tabState.yPos, visitedSections: tabState.visitedSections});
               //send_analytics_event('Showed UI', {'Element': tabState.uiType});
@@ -347,7 +357,11 @@ chrome.runtime.onMessage.addListener(
           case 'sbToggle':
               chrome.tabs.sendMessage(id, {action: "toggleSidebar"});
               console.log("BACKGROUDN INSIDE TOGGLE TOOLBAR");
+              tabStates[id].toggleOn = !(tabStates[id].toggleOn)
               break;
+
+          case 'getToggle':
+              sendResponse({toggleOn: tabState.toggleOn});
 
 
        }

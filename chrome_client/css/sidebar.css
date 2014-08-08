@@ -86,6 +86,8 @@ h3.hover {
 	font-size: 2em;
 	color:white;
 	font-family: verdana;
+	height: 40px;
+	margin-top: 5px;
 }
 
 
@@ -95,7 +97,7 @@ h3.hover {
 }
 
 #results {
-	padding-top: 92px;
+	position: absolute;
 	top: 91px;
 	left: 0px;
 	z-index: 100;

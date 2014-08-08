@@ -4,7 +4,7 @@ var newCssText = "margin-left: " + toolbarHeight + "px !important";
 var minCssText = "margin-left: " + minHeight + "px !important";
 //document.body.style.position = "relative"; 
 var newIframe = document.createElement('iframe');
-newIframe.width = toolbarHeight + 'px';
+//newIframe.width = toolbarHeight + 'px';
 newIframe.height = '100%'; 
 newIframe.id = "searchToolbar"
 newIframe.style.border = 'none';
@@ -13,18 +13,47 @@ newIframe.style.top = "0px";
 newIframe.style.left = "0px";
 newIframe.style.margin = "0px";
 newIframe.style.zIndex = "99999999999999999";
-newIframe.onmouseover = function() {document.body.style.overflow='hidden'};
-newIframe.onmouseout= function() {document.body.style.overflow='auto'};
+//newIframe.onmouseover = function() {document.body.style.overflow='hidden'};
+//newIframe.onmouseout= function() {document.body.style.overflow='auto'};
 var preFrameZIndex = "999999999999";
 var cntrl = false;
 var s = false;
 timeout = 5;
 var firstTime = true;
+var docReady = false;
 
-makeSpace(timeout);
-$(document).ready(function() { 
-	init();
+console.log('toggleOn exist: ' + toggleOn);
+chrome.runtime.sendMessage({action: "getToggle"}, function(response) {
+	console.log("RECEIVED GETTOGGLE MESSAGE RESPONSE");
+	toggleOn = response.toggleOn;
+	if (toggleOn) {
+		newIframe.width = toolbarHeight + 'px';
+		makeSpace(toolbarHeight, timeout);
+		if (docReady) {
+			init(newCssText, toolbarHeight);
+		}
+	}else {
+		newIframe.width = minHeight + 'px';
+		makeSpace(minHeight, timeout);
+		if (docReady) {
+			init(minCssText, minHeight);
+		}else {
+
+		}
+	}
 });
+
+$(document).ready(function() { 
+	docReady = true;
+	console.log('document ready, toggleOn: ' + toggleOn);
+	if (toggleOn != undefined) {
+		if (toggleOn)
+			init(newCssText, toolbarHeight);
+		else
+			init(minCssText, minHeight);
+	}
+});
+
 
 function moveElementsByTag(tag, change, force) {
 	var elements = document.getElementsByTagName(tag);
@@ -46,22 +75,7 @@ function moveFixedElements(change, force) {
 	 moveElementsByTag("div", change, force);
 	 moveElementsByTag("header", change, force);
 	//moveElementsByTag("nav", change);  //this seems to do more harm than good.
-}
-
-
-
-
-function initializeHeadroom(tag) {
-	var elements = document.getElementsByTagName(tag); //might need to add "header" tag
-	for (var elNum = 0; elNum < elements.length; elNum++){
-		var el = elements[elNum];
-		var elStyle = window.getComputedStyle(el);
-		if (elStyle.position == "fixed"){
-			var headroom = new Headroom(el);
-			headroom.init();
-		}
-	}
-}		
+}	
 
 function moveSidebar(size) {
 	var sidebar = document.getElementById(newIframe.id);
@@ -91,17 +105,13 @@ function removeToolbar() {
 	document.body.style.cssText = cssText;
 }
 
-function init() {
+function init(text, amount) {
 	if (!document.getElementById('searchToolbar')) {  //if iframe doesnt already exist
 		document.body.style.position = "relative"; 
 		newIframe.src = chrome.extension.getURL("sidebar.html");
-		document.body.style.cssText = document.body.style.cssText + ";" + newCssText;
-		moveFixedElements(toolbarHeight);
+		document.body.style.cssText = document.body.style.cssText + ";" + text;
+		moveFixedElements(amount);
 		document.body.insertBefore(newIframe, document.body.firstChild);
-	//	window.setTimeout(function() {
-		//	var placeHolderDiv = document.getElementById('placeHolderDiv');
-		   // placeHolderDiv.parentNode.removeChild(placeHolderDiv);
-	//	}, 1000);
 
 		chrome.runtime.onMessage.addListener(
 		    function(request, sender, sendResponse) {
@@ -140,14 +150,14 @@ function init() {
 
 
 //create space above body before dom ready has fired
-function makeSpace(wait) {
+function makeSpace(amount, wait) {
 	if (firstTime) {
 		window.addEventListener("load", function() {
-           moveFixedElements(toolbarHeight);
+           moveFixedElements(amount);
         }, false);
 
 		var style = document.createElement('style');
-	    var text = "body { position:relative; left:0px; margin-left: " + toolbarHeight + "px; }";
+	    var text = "body { position:relative; left:0px; margin-left: " + amount + "px; }";
 	    var textNode = document.createTextNode(text);
 	    style.appendChild(textNode);
 	    document.documentElement.appendChild(style); 
@@ -171,7 +181,7 @@ function makeSpace(wait) {
 	}
 
 	if(document.body) {		
-		moveFixedElements(toolbarHeight);
+		moveFixedElements(amount);
 	}else {
 	    // The body hasn't been created yet, wait for it.
 	    window.setTimeout(function() {

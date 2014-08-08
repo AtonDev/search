@@ -5,8 +5,9 @@ $(document).ready(function(){
     var clickedUrl;
     var curUrl;
     var toggleOn;
+    var results = document.getElementById('results');
 
-    
+  /*  
     chrome.storage.sync.get('toggleOn', function(items) {
         toggleOn = items['toggleOn'];
         if (toggleOn == 'undefined') {
@@ -21,7 +22,7 @@ $(document).ready(function(){
         }
     });
 
-   
+   */
 
     function loadResults(titles, abstracts, dispurls, urls, curUrl) {
         console.log("START LOADRESULTS");
@@ -41,7 +42,7 @@ $(document).ready(function(){
             content.appendChild(dispurl);
             content.appendChild(abstract);
             section.appendChild(content);
-            document.getElementById('results').appendChild(section);
+            results.appendChild(section);
 
 
             var aTag = document.createElement("a");
@@ -86,6 +87,26 @@ $(document).ready(function(){
     chrome.runtime.sendMessage({action: "loaded"}, function(response) {
         var visitedSections;
         var query = response.query;
+        var toggleOn = response.toggleOn
+        if (!toggleOn) {
+            toggleHide();
+        } else {
+            toggleShow();
+        }    
+
+        document.getElementById('sbToggleBtn').addEventListener('click', function() {
+            this.blur();
+            toggleOn = !toggleOn;
+            var curVal = document.getElementById('sbToggleBtn').innerHTML;
+            if (!toggleOn) {
+                toggleHide();
+            }else {
+                toggleShow();
+            }
+            //chrome.storage.sync.set({'toggleOn': toggleOn}, function() {});
+            chrome.runtime.sendMessage({action: "sbToggle"});
+        });
+
         if (query != '') {
 
             document.getElementById('searchBox').value = response.query;
@@ -124,28 +145,14 @@ $(document).ready(function(){
         chrome.runtime.sendMessage({action: "uiTypeChange"});
     });
 
-    document.getElementById('sbToggleBtn').addEventListener('click', function() {
-        this.blur();
-        toggleOn = !toggleOn;
-        var curVal = document.getElementById('sbToggleBtn').innerHTML;
-        if (!toggleOn) {
-            toggleHide();
-            document.getElementById('sbToggleBtn').innerHTML = "&raquo";
-        }else {
-            document.getElementById('sbToggleBtn').innerHTML = "&laquo";
-            toggleShow();
-        }
-        chrome.storage.sync.set({'toggleOn': toggleOn}, function() {});
-        chrome.runtime.sendMessage({action: "sbToggle"});
-    });
-
     function resizeToolbar(size) {
         if (toggleOn == true) 
             chrome.runtime.sendMessage({action: "resizeToolbar", size: size});
     }
 
     function toggleHide() {
-        document.getElementById('results').style.display = 'none';
+        document.getElementById('sbToggleBtn').innerHTML = "&raquo";
+        results.style.display = 'none';
         document.getElementById('toolbar').style.display = 'none';
         document.getElementById('logo').style.display = 'none';
         document.getElementById('uiSwitchBtn').style.display = 'none';
@@ -153,7 +160,8 @@ $(document).ready(function(){
     }
 
     function toggleShow() {
-        document.getElementById('results').style.display = 'initial';
+        document.getElementById('sbToggleBtn').innerHTML = "&laquo";
+        results.style.display = 'initial';
         document.getElementById('toolbar').style.display = 'initial';
         document.getElementById('logo').style.display = 'initial';
         document.getElementById('uiSwitchBtn').style.display = 'initial';
