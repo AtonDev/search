@@ -4,7 +4,7 @@ $(document).ready(function(){
 	var searchBox = document.getElementById('searchBox');
     searchBox.focus();
     BGPage.togglePopup(window); 
-    
+   
     searchFormDiv.addEventListener('submit', function(event) {
     	event.preventDefault();
     	var query = document.getElementById('searchBox').value;
