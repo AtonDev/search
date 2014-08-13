@@ -4,6 +4,8 @@ var tabs = require("sdk/tabs");
 var search = require('./search');
 var sidebar = require('./sidebar');
 
+var test = require('./test');
+
 
 var tab_properties = {};
 
