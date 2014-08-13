@@ -28,13 +28,13 @@ var timeout = 10;
 var nextHotKey = Hotkey({
   combo: "alt-Right",
   onPress: function() {
-    next_page("hotkey");
+    next_page("nextHotkey");
   }
 });
 var previousHotKey = Hotkey({
   combo: "alt-Left",
   onPress: function() {
-    previous_page("hotkey");
+    previous_page("previousHotkey");
   }
 });
 var altsKey = Hotkey({
@@ -87,7 +87,7 @@ function next_page(type) {
     load_url(idx, tab);
   };
   //send_event("next");
-  send_analytics_event("Load URL", {
+  send_analytics_event("Loaded URL", {
     "Origin": "alt-s",
     "URL": tab_properties[tab.id]["urls"][idx+1],
     "Trigger": type
@@ -102,7 +102,7 @@ function previous_page(type) {
     load_url(idx, tab)
   };
   //send_event("previous");
-  send_analytics_event("Load URL", {
+  send_analytics_event("Loaded URL", {
     "Origin": "alt-s",
     "URL": tab_properties[tab.id]["urls"][idx-1],
     "Trigger": type
@@ -133,7 +133,7 @@ function previous_page(type) {
 
 function get_uid() {
   var req = Request({
-    url : "http://0.0.0.0:3000/new_token",
+    url : "http://search.alts.io/new_token",
     onComplete: function (response) {
       ss.storage.uid = JSON.parse(response.text).token;
     }
@@ -144,9 +144,7 @@ function get_uid() {
 function send_analytics_event(alts_event, properties) {
   if (ss.storage.uid != null) {
     var context = {};
-    context['userAgent'] = httpHandler.userAgent;//'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.90 Safari/537.1';
-    //for mixpanel need to send browser property
-    //properties['Browser'] = "firefox";
+    context['userAgent'] = httpHandler.userAgent
     var params = {};
     params['userId'] = ss.storage.uid;
     params['event'] = alts_event;
@@ -154,10 +152,16 @@ function send_analytics_event(alts_event, properties) {
     params['context'] = context;
 
     var req = Request({
-      url: "https://api.segment.io/v1/track",
+      /*url: "https://api.segment.io/v1/track",
       headers: {
         "Authorization": "Basic NnhjamRlNGI1NA=="
+      },*/
+      // for production MmJpdWs5ZnA1eA==
+      
+      headers: {
+        "Authorization": "Basic MmJpdWs5ZnA1eA=="
       },
+      
       content: params,
       onComplete: function(response) {
         console.log("analytics response: " + response.text);
@@ -194,7 +198,7 @@ function handleFrameEvent(message) {
       }, message.origin);
       break;
     case "next":
-      next_page("button");
+      next_page("nextBtn");
       break;
     case "autocomplete":
       var q = message.data.query;
@@ -215,20 +219,21 @@ function getUrls(query_, source) {
   var query = query_.trim();
   var url_ = "http://search.alts.io/s?search=" + query;
   //send_event("search");
-  send_analytics_event("Search", {
-    "Search Query" : query
+  send_analytics_event("Searched", {
+    "Search Query" : query,
+    "Origin": "navbar"
   });
 
   var req = Request({
     url: url_,
     content: query,
     onComplete: function(response) {
-      handleResponse(response, tabs.activeTab, query);
+      handleGetUrlsResponse(response, tabs.activeTab, query);
     }
   }).get();
 };
 
-function handleResponse(response, tab, query) {
+function handleGetUrlsResponse(response, tab, query) {
   var urls = JSON.parse(response.text).urls;
   tab_properties[tab.id] = {};
   tab_properties[tab.id]["query"] = query;
@@ -236,7 +241,7 @@ function handleResponse(response, tab, query) {
   tab_properties[tab.id]["url_index"] = 0;
   if (urls.length > 0) {
     load_url(0, tab);
-    send_analytics_event("Load URL", {
+    send_analytics_event("Loaded URL", {
       "Origin": "alt-s",
       "URL": tab_properties[tab.id]["urls"][idx],
       "Trigger": "search"
@@ -298,13 +303,13 @@ function tabActivate(tab) {
 }
 
 function toolbar_showing(e) {
-  send_analytics_event("Show UI", {
+  send_analytics_event("Showed UI", {
     "Element": "navbar"
   });
 }
 
 function toolbar_hiding(e) {
-  send_analytics_event("Hide UI", {
+  send_analytics_event("Hid UI", {
     "Element": "navbar"
   });
 }
