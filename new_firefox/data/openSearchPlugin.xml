@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>alt-s</ShortName>
+  <Description>Alternative Search</Description>
+  <InputEncoding><strong>UTF-8</strong></InputEncoding>
+  <Url type="text/html" method="GET" template="http://search.alts.io/scomp">
+    <Param name="search" value="{searchTerms}"/>
+  </Url>
+  <Url type="application/x-suggestions+json" template="http://ff.search.yahoo.com/gossip?output=fxjson%26command={searchTerms}"/>
+
+
+  
+</OpenSearchDescription>
