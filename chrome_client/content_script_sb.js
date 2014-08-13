@@ -22,10 +22,10 @@ timeout = 5;
 var firstTime = true;
 var docReady = false;
 
-console.log('toggleOn exist: ' + toggleOn);
-chrome.runtime.sendMessage({action: "getToggle"}, function(response) {
-	console.log("RECEIVED GETTOGGLE MESSAGE RESPONSE");
-	toggleOn = response.toggleOn;
+//console.log('toggleOn exist: ' + toggleOn);
+//chrome.runtime.sendMessage({action: "getToggle"}, function(response) {
+//	console.log("RECEIVED GETTOGGLE MESSAGE RESPONSE");
+//	toggleOn = response.toggleOn;
 	if (toggleOn) {
 		newIframe.width = toolbarHeight + 'px';
 		makeSpace(toolbarHeight, timeout);
@@ -41,7 +41,7 @@ chrome.runtime.sendMessage({action: "getToggle"}, function(response) {
 
 		}
 	}
-});
+//});
 
 $(document).ready(function() { 
 	docReady = true;

@@ -111,7 +111,7 @@ function submitToServer(tabId, query, origin) {
         var firstURL = urls[0];
         tabStates[tabId].urls = urls; 
         tabStates[tabId].idx = 0;   
-        tabStates[id].curUrl = firstURL;
+        tabStates[tabId].curUrl = firstURL;
         chrome.tabs.update(tabId, {active: true, url: firstURL}); 
         var titles = JSON.parse(xhr.responseText).titles;
         var abstracts = JSON.parse(xhr.responseText).abstracts;
@@ -224,7 +224,7 @@ function initializePopup(wndw) {
 //chrome.omnibox.setDefaultSuggestion(suggestion);
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  console.log('inside onUpdated ' + changeInfo.status);
+  console.log('inside onUpdated ' + changeInfo.status + " to url: " + changeInfo.url);
   if (tabId in tabStates && changeInfo.status == 'loading')
     if (tabStates[tabId].injecting != true && tabStates[tabId].query != '') {
      // tabStates[tabId].injecting = true;
@@ -283,8 +283,13 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     var tab = sender.tab;
     var id;
-    if (tab) 
+    if (tab) {
       id = sender.tab.id;
+      if (request.action == 'initializeTab' && !tabStates[id]) {
+        console.log('initiating tab with id = ' + id);
+        initializeTab(id);
+      }
+    }
     if (id in tabStates) {
       var tabState = tabStates[id];
       switch (request.action) {
