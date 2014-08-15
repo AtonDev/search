@@ -7,6 +7,9 @@
   <Url type="text/html" method="GET" template="http://search.alts.io/scomp">
     <Param name="search" value="{searchTerms}"/>
   </Url>
+  <Url type="application/x-moz-keywordsearch" method="GET" template="http://search.alts.io/scomp">
+    <Param name="search" value="{searchTerms}"/>
+  </Url>
   <Url type="application/x-suggestions+json" template="http://ff.search.yahoo.com/gossip?output=fxjson%26command={searchTerms}"/>
 
 
