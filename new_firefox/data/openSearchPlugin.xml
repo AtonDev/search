@@ -11,7 +11,4 @@
     <Param name="search" value="{searchTerms}"/>
   </Url>
   <Url type="application/x-suggestions+json" template="http://ff.search.yahoo.com/gossip?output=fxjson%26command={searchTerms}"/>
-
-
-  
 </OpenSearchDescription>
