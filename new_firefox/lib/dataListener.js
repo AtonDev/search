@@ -14,6 +14,7 @@ function init() {
     onAttach: function(worker) {
       worker.port.on("data", function(_data) {
         _data["index"] = 0
+        _data["loadedIdx"] = 0
         ss.storage.tabs_data[tabs.activeTab.id] = _data
         sidebar.show()
         tabs.activeTab.url = _data.urls[0]

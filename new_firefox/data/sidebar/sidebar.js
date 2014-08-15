@@ -6,12 +6,11 @@ addon.port.on('update_content', function(data) {
   //for (c)
   table.innerHTML=""
   for (var i = 0; i < data.urls.length; i++) {
-    addTableElement(data.urls[i], data.dispurls[i], data.titles[i], data.abstracts[i], data.index, i)
+    addTableElement(data.urls[i], data.dispurls[i], data.titles[i], data.abstracts[i], data.loadedIdx, i)
   };
 })
 
 addon.port.on('select_box', function(index) {
-  console.log(index)
   var old = document.getElementById("selected")
   if (old) {old.id = ""}
   var containers = document.getElementsByClassName('containers')

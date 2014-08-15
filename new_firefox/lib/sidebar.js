@@ -8,6 +8,7 @@ var mySidebar
 function loadURL(info) {
   tabs.activeTab.url = info.url
   ss.storage.tabs_data[tabs.activeTab.id].index = info.idx
+  ss.storage.tabs_data[tabs.activeTab.id].loadedIdx = info.idx
 }
 
 
@@ -46,7 +47,7 @@ function show() {
 
 function next() {
   var tab = tabs.activeTab
-  if (ss.storage.tabs_data[tab.id]["index"] < ss.storage.tabs_data[tab.id].url.length-1) {
+  if (ss.storage.tabs_data[tab.id]["index"] < ss.storage.tabs_data[tab.id].urls.length-1) {
     ss.storage.tabs_data[tab.id]["index"] += 1
     ss.storage.worker.port.emit('select_box', ss.storage.tabs_data[tab.id]["index"])
   }
