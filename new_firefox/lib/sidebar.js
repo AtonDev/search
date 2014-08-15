@@ -46,14 +46,18 @@ function show() {
 
 function next() {
   var tab = tabs.activeTab
-  ss.storage.tabs_data[tab.id]["index"] += 1
-  ss.storage.worker.port.emit('select_box', ss.storage.tabs_data[tab.id]["index"])
+  if (ss.storage.tabs_data[tab.id]["index"] < ss.storage.tabs_data[tab.id].url.length-1) {
+    ss.storage.tabs_data[tab.id]["index"] += 1
+    ss.storage.worker.port.emit('select_box', ss.storage.tabs_data[tab.id]["index"])
+  }
 }
 
 function previous() {
   var tab = tabs.activeTab
-  ss.storage.tabs_data[tab.id]["index"] -= 1
-  ss.storage.worker.port.emit('select_box', ss.storage.tabs_data[tab.id]["index"])
+  if (ss.storage.tabs_data[tab.id]["index"] > 0) {
+    ss.storage.tabs_data[tab.id]["index"] -= 1
+    ss.storage.worker.port.emit('select_box', ss.storage.tabs_data[tab.id]["index"])
+  }
 }
 
 function loadSelected() {
