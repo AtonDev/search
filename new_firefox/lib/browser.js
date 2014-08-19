@@ -15,7 +15,7 @@ function activateURLBar() {
     console.log(event.target)
     if ((event.type == 'keypress' && event.charCode == 0)||
       (event.type == 'click' && event.target.id == "urlbar-go-button")) {
-      search.getQueryData(encodeURI(urlBar.value), function() { sidebar.show() })
+      search.getQueryData(urlBar.value, function() { sidebar.show() })
 
       //deactivate urlbar
       urlBar.handleCommand = old_handleCommand
