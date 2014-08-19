@@ -14,15 +14,11 @@ addon.port.on('update_content', function(data) {
 })
 
 addon.port.on('select_box', function(index) {
-  var old = document.getElementById("selected")
-  if (old) {old.id = ""}
-  var containers = document.getElementsByClassName('containers')
-  containers[index].id = "selected"
-  smoothScrollTo(containers[index].offsetTop, 700)
+  selectBoxAt(index)
 })
 
 addon.port.on('get_selected', function() {
-  loadUrl()
+  loadUrl(null)
   //addon.port.emit('selected_index', idx)
 })
 
@@ -100,21 +96,37 @@ function addTableElement(url, dispurl, title, abstract, current_idx, idx) {
   container.appendChild(urlPar)
   container.appendChild(indexPar)
 
-  container.setAttribute('onclick', "loadUrl()")
+  info = JSON.stringify({"idx":idx, "url":url})
+  container.setAttribute('onclick', "handleClick("+ info +")")
 
   table.appendChild(container)
 }
 
-function loadUrl() {
-  var info = {"idx":0, "url":""}
-  var selected = document.getElementById("selected")
-  for (var i = 0; i < selected.childNodes.length; i++) {
-    var child = selected.childNodes[i]
-    if (child.className == "urls") {
-      info.url = child.innerHTML
-    } else if (child.className == "indexes") {
-      info.idx = parseInt(child.innerHTML)
-    }
+function handleClick(info) {
+  selectBoxAt(info.idx)
+  loadUrl(info)
+}
+
+function selectBoxAt(index) {
+  var old = document.getElementById("selected")
+    if (old) {old.id = ""}
+    var containers = document.getElementsByClassName('containers')
+    containers[index].id = "selected"
+    smoothScrollTo(containers[index].offsetTop, 700)
+}
+
+function loadUrl(info) {
+  if (!info) {
+    info = {"idx":0, "url":""}
+    var selected = document.getElementById("selected")
+    for (var i = 0; i < selected.childNodes.length; i++) {
+      var child = selected.childNodes[i]
+      if (child.className == "urls") {
+        info.url = child.innerHTML
+      } else if (child.className == "indexes") {
+        info.idx = parseInt(child.innerHTML)
+      }
+    }  
   }
   addon.port.emit('load_url', info)
 }
