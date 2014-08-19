@@ -18,6 +18,7 @@ addon.port.on('select_box', function(index) {
   if (old) {old.id = ""}
   var containers = document.getElementsByClassName('containers')
   containers[index].id = "selected"
+  smoothScrollTo(containers[index].offsetTop, 700)
 })
 
 addon.port.on('get_selected', function() {
@@ -33,10 +34,39 @@ for (var i = 0; i < s_data.urls.length; i++) {
 };*/
 //end test data
 
+//test
 
-function select(idx) {
+window.smoothScrollTo = (function () {
+  var timer, start, factor;
+  
+  return function (target, duration) {
+    var offset = window.pageYOffset,
+        delta  = target - window.pageYOffset; // Y-offset difference
+    duration = duration || 1000;              // default 1 sec animation
+    start = Date.now();                       // get start time
+    factor = 0;
+    
+    if( timer ) {
+      clearInterval(timer); // stop any running animations
+    }
+    
+    function step() {
+      var y;
+      factor = (Date.now() - start) / duration; // get interpolation factor
+      if( factor >= 1 ) {
+        clearInterval(timer); // stop animation
+        factor = 1;           // clip to max 1.0
+      } 
+      y = factor * delta + offset;
+      window.scrollBy(0, y - window.pageYOffset);
+    }
+    
+    timer = setInterval(step, 10);
+    return timer;
+  };
+}());
 
-}
+//end test
 
 function addTableElement(url, dispurl, title, abstract, current_idx, idx) {
   var container = document.createElement("div")
