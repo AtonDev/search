@@ -2,6 +2,7 @@ var ss = require("sdk/simple-storage")
 var data = require('sdk/self').data
 var tabs = require('sdk/tabs')
 var ui = require('sdk/ui')
+var windowUtils = require('sdk/window/utils')
 
 var mySidebar
 
@@ -26,10 +27,12 @@ function init() {
       console.log('weird guy called')
     }
   });
+  windowUtils.getMostRecentBrowserWindow().top.document.getElementById("sidebar-box").width=320;
   mySidebar.show()
 }
 
 function show() {
+  
   var tabId = tabs.activeTab.id
   if (ss.storage.tabs_data.hasOwnProperty(tabId)) {
     _data = ss.storage.tabs_data[tabId]

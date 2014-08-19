@@ -1,3 +1,6 @@
+
+console.log(window.gBrowser)
+
 var table = document.getElementById("table");
 
 

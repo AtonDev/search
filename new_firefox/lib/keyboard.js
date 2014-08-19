@@ -5,6 +5,8 @@ enter to load the selcted url
 */
 var { Hotkey } = require('sdk/hotkeys')
 var sidebar = require('sidebar')
+var browser = require('browser')
+
 
 function init() {
   Hotkey({
@@ -25,6 +27,7 @@ function init() {
     combo: "alt-s",
     onPress: function() {
       console.log('alt-s')
+      browser.activateURLBar()
     }
   });
 

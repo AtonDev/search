@@ -8,9 +8,13 @@ var dataListener = require('dataListener');
 
 
 
+
 //---------START - test-----------
 //var test = require('./test');
 
+//var browser = require('browser');
+
+//console.log(window.gBrowser)
 
 
 //-----------END - test-----------
