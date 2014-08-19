@@ -11,9 +11,9 @@ p {
 }
 
 .containers {
-  padding: 40px 0 30px 0;
+  padding: 20px 0 30px 0;
   border-bottom: 1.5px solid #ddd;
-  height: 70px;
+  height: 75px;
   transition-property: height;
   transition-duration:  0.5s;
   transition-delay:  0s;
@@ -31,12 +31,12 @@ p {
   
 .titles {
   white-space: nowrap;
-  height: 30px;
+  height: 25px;
   font-size: 12px;
 }
 
 .dispurls {
-  height: 20px;
+  height: 15px;
   font-size: 10px;
   width: 90%;
   color: green;
@@ -44,7 +44,7 @@ p {
 }
 
 .abstracts {
-  height: 40px;
+  height: 43px;
   color: rgba(0,0,0,0);
   font-size: 11px;
   transition-duration:  0.3s;

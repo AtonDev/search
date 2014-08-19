@@ -1,8 +1,4 @@
-
-console.log(window.gBrowser)
-
 var table = document.getElementById("table");
-
 
 addon.port.on('update_content', function(data) {
   //containers = document.getElementByClassName('containers');
@@ -11,6 +7,7 @@ addon.port.on('update_content', function(data) {
   for (var i = 0; i < data.urls.length; i++) {
     addTableElement(data.urls[i], data.dispurls[i], data.titles[i], data.abstracts[i], data.loadedIdx, i)
   };
+  smoothScrollTo(document.getElementById("selected").offsetTop, 1)
 })
 
 addon.port.on('select_box', function(index) {
