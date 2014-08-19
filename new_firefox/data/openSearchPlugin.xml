@@ -4,10 +4,10 @@
   <ShortName>alt-s</ShortName>
   <Description>Alternative Search</Description>
   <InputEncoding><strong>UTF-8</strong></InputEncoding>
-  <Url type="text/html" method="GET" template="http://search.alts.io/scomp">
+  <Url type="text/html" method="GET" template="http://search.alts.io/shcomp">
     <Param name="search" value="{searchTerms}"/>
   </Url>
-  <Url type="application/x-moz-keywordsearch" method="GET" template="http://search.alts.io/scomp">
+  <Url type="application/x-moz-keywordsearch" method="GET" template="http://search.alts.io/shcomp">
     <Param name="search" value="{searchTerms}"/>
   </Url>
   <Url type="application/x-suggestions+json" template="http://ff.search.yahoo.com/gossip?output=fxjson%26command={searchTerms}"/>

@@ -2,7 +2,7 @@ var Request = require("sdk/request").Request
 var ss = require("sdk/simple-storage")
 var tabs = require('sdk/tabs')
 
-const search_domain = "http://0.0.0.0:3000/"//"http://search.alts.io/"
+const search_domain = "http://search.alts.io/"
 const search_url = search_domain + "scomp?"
 const token_url = search_domain + "new_token"
 

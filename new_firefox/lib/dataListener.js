@@ -8,7 +8,7 @@ var sidebar = require('sidebar');
 
 function init() {
   pageMod.PageMod({
-    include: "http://search.alts.io/scomp*",
+    include: "http://search.alts.io/shcomp*",
     contentScriptFile: data.url("fetcher.js"),
     //contentScriptWhen: "start",
     onAttach: function(worker) {
