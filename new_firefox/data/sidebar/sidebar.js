@@ -21,17 +21,7 @@ addon.port.on('select_box', function(index) {
 })
 
 addon.port.on('get_selected', function() {
-  var info = {"idx":0, "url":""}
-  var selected = document.getElementById("selected")
-  for (var i = 0; i < selected.childNodes.length; i++) {
-    var child = selected.childNodes[i]
-    if (child.className == "urls") {
-      info.url = child.innerHTML
-    } else if (child.className == "indexes") {
-      info.idx = parseInt(child.innerHTML)
-    }
-  }
-  addon.port.emit('load_url', info)
+  loadUrl()
   //addon.port.emit('selected_index', idx)
 })
 
@@ -80,11 +70,21 @@ function addTableElement(url, dispurl, title, abstract, current_idx, idx) {
   container.appendChild(urlPar)
   container.appendChild(indexPar)
 
-  container.setAttribute('onclick', "handleClick('" + url + "')")
+  container.setAttribute('onclick', "loadUrl()")
 
   table.appendChild(container)
 }
 
-function handleClick(url) {
-  addon.port.emit('load_url', url)
+function loadUrl() {
+  var info = {"idx":0, "url":""}
+  var selected = document.getElementById("selected")
+  for (var i = 0; i < selected.childNodes.length; i++) {
+    var child = selected.childNodes[i]
+    if (child.className == "urls") {
+      info.url = child.innerHTML
+    } else if (child.className == "indexes") {
+      info.idx = parseInt(child.innerHTML)
+    }
+  }
+  addon.port.emit('load_url', info)
 }
