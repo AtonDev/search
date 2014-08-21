@@ -1,6 +1,7 @@
 var Request = require("sdk/request").Request
 var ss = require("sdk/simple-storage")
 var tabs = require('sdk/tabs')
+var window = require('sdk/window/utils').getMostRecentBrowserWindow()
 
 const search_domain = "http://search.alts.io/"
 const search_url = search_domain + "scomp?"

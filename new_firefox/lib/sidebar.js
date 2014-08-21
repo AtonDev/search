@@ -32,19 +32,18 @@ function init() {
 }
 
 function show() {
-  
+  if (!mySidebar) {
+      init()
+  }
   var tabId = tabs.activeTab.id
   if (ss.storage.tabs_data.hasOwnProperty(tabId)) {
     _data = ss.storage.tabs_data[tabId]
-    if (!mySidebar) {
-      init()
-    } else {
-      //console.log("show: " + _data.urls[0] +"\n tab: " + tabs.activeTab.id)
-      mySidebar.show()
-      worker = ss.storage.worker
-      worker.port.emit('update_content', _data)
-      worker.port.on('load_url', function(info) { loadURL(info) })
-    }
+    mySidebar.show()
+    worker = ss.storage.worker
+    worker.port.emit('update_content', _data)
+    worker.port.on('load_url', function(info) { loadURL(info) })
+  } else {
+    mySidebar.hide()
   }
 }
 
