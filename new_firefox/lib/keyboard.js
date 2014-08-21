@@ -26,7 +26,6 @@ function init() {
   Hotkey({
     combo: "alt-s",
     onPress: function() {
-      console.log('alt-s')
       browser.activateURLBar()
     }
   });
@@ -34,7 +33,6 @@ function init() {
   Hotkey({
     combo: "alt-Return",
     onPress: function() {
-      console.log('alt-return')
       sidebar.loadSelected()
     }
   });
