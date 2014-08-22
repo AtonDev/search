@@ -26,7 +26,7 @@ function sendEvent(alts_event, properties) {
       headers: {
         // for production  MmJpdWs5ZnA1eA==
         // for development NnhjamRlNGI1NA==
-        "Authorization": "Basic NnhjamRlNGI1NA=="
+        "Authorization": "Basic MmJpdWs5ZnA1eA=="
       },
       
       content: params,
