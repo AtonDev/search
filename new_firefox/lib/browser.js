@@ -1,6 +1,7 @@
 var windowUtils = require('sdk/window/utils')
 var search = require('search')
 var sidebar = require('sidebar')
+var analytics = require('analytics')
 
 
 //need a function to activate the url bar for alt-s searches
@@ -16,6 +17,7 @@ function activateURLBar() {
     if ((event.type == 'keypress' && event.charCode == 0)||
       (event.type == 'click' && event.target.id == "urlbar-go-button")) {
       search.getQueryData(urlBar.value, function() { sidebar.show() })
+      analytics.sendEvent('Searched', {'Search Query': '', 'Origin': 'urlbar'})
 
       //deactivate urlbar
       urlBar.handleCommand = old_handleCommand

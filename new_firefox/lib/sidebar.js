@@ -3,6 +3,8 @@ var data = require('sdk/self').data
 var tabs = require('sdk/tabs')
 var ui = require('sdk/ui')
 var windowUtils = require('sdk/window/utils')
+var analytics = require('analytics')
+
 
 var mySidebar
 
@@ -10,6 +12,7 @@ function loadURL(info) {
   tabs.activeTab.url = info.url
   ss.storage.tabs_data[tabs.activeTab.id].index = info.idx
   ss.storage.tabs_data[tabs.activeTab.id].loadedIdx = info.idx
+  analytics.sendEvent('Loaded URL', {'URL':info.url, 'Trigger':''})
 }
 
 
@@ -34,17 +37,19 @@ function init() {
 function show() {
   if (!mySidebar) {
       init()
-  }
-  var tabId = tabs.activeTab.id
-  if (ss.storage.tabs_data.hasOwnProperty(tabId)) {
-    _data = ss.storage.tabs_data[tabId]
-    mySidebar.show()
-    worker = ss.storage.worker
-    worker.port.emit('update_content', _data)
-    worker.port.on('load_url', function(info) { loadURL(info) })
   } else {
-    mySidebar.hide()
+    var tabId = tabs.activeTab.id
+    if (ss.storage.tabs_data.hasOwnProperty(tabId)) {
+      _data = ss.storage.tabs_data[tabId]
+      mySidebar.show()
+      worker = ss.storage.worker
+      worker.port.emit('update_content', _data)
+      worker.port.on('load_url', function(info) { loadURL(info) })
+    } else {
+      mySidebar.hide()
+    }
   }
+  
 }
 
 function next() {

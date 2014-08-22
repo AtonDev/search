@@ -22,13 +22,11 @@ function sendEvent(alts_event, properties) {
 
     var req = Request({
       url: "https://api.segment.io/v1/track",
-      /* headers: {
-        "Authorization": "Basic NnhjamRlNGI1NA=="
-      },*/
-      // for production MmJpdWs5ZnA1eA==
       
       headers: {
-        "Authorization": "Basic MmJpdWs5ZnA1eA=="
+        // for production  MmJpdWs5ZnA1eA==
+        // for development NnhjamRlNGI1NA==
+        "Authorization": "Basic NnhjamRlNGI1NA=="
       },
       
       content: params,

@@ -11,7 +11,7 @@ function init() {
   browserSearchService.init()
   var type = Ci.nsISearchEngine.DATA_XML;
   if (!browserSearchService.getEngineByName('alt-s')) {
-    browserSearchService.addEngine(data.url('openSearchPlugin.xml'), type,data.url('searchIcon1.png'), false)
+    browserSearchService.addEngine(data.url('openSearchPlugin.xml'), type,data.url('engineIcon.ico'), false)
     setCurrentEngine()
   }
 }

@@ -4,6 +4,7 @@ var data = require("sdk/self").data;
 var tabs = require('sdk/tabs')
 var sidebar = require('sidebar')
 var search = require('search')
+var analytics = require('analytics')
 
 
 
@@ -19,6 +20,7 @@ function init() {
         ss.storage.tabs_data[tabs.activeTab.id] = _data
         sidebar.show()
         tabs.activeTab.url = _data.urls[0]
+        analytics.sendEvent('Searched', {'Search Query': '', 'Origin': 'urlbar'})
       })
     }
   })

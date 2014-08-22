@@ -23,7 +23,7 @@ var dataListener = require('dataListener');
 
 function _main() {
   //stable
-  //search.getUID()
+  search.getUID()
   ss.storage.tabs_data = {}
   keyboard.init()
   openSearch.init()
