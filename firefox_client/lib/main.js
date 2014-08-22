@@ -23,8 +23,7 @@ var timeout = 10;
 // main
 
 
-//hotkey
-
+//hotkeys
 var nextHotKey = Hotkey({
   combo: "alt-Right",
   onPress: function() {
@@ -46,6 +45,8 @@ var altsKey = Hotkey({
   }
 });
 
+
+//panels
 var alert_panel = new panels.Panel({
   position : {
     top:0
@@ -78,6 +79,17 @@ var toolbar = ui.Toolbar({
   title: "Alt-S",
   items: [search_frame]
 });
+
+
+var sidebar = ui.Sidebar({
+  id: 'didebar',
+  title: 'alt-S',
+  url: data.url("sidebar.html")
+});
+sidebar.show()
+
+//--- END of ui
+
 
 function next_page(type) {
   var tab = tabs.activeTab;
