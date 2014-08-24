@@ -92,7 +92,7 @@ function tabActivate(tab) {
   if (ss.storage.tabs_data.hasOwnProperty(tab.id)) {
     show(ss.storage.tabs_data[tab.id])
   } else {
-    mySidebar.hide()
+    if(mySidebar) { mySidebar.hide() }
   };
 }
 

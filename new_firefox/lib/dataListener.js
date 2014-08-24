@@ -26,7 +26,7 @@ function init() {
   })
 
   pageMod.PageMod({
-    include: "http://alts.io/search",
+    include: "*.alts.io/search",
     contentScriptFile: data.url("searchFromSite.js"),
     //contentScriptWhen: "start",
     onAttach: function(worker) {
@@ -36,16 +36,7 @@ function init() {
     }
   })
 
-  /*pageMod.PageMod({
-    include: "http://alts.io/search",
-    contentScript: data.url("searchFromSite.js"),
-    //contentScriptWhen: "start",
-    onAttach: function(worker) {
-      worker.port.on("query", function(query) {
-        search.getQueryData(query, function() { sidebar.show() })
-      })
-    }
-  })*/
+  
 }
 
 exports.init = init
