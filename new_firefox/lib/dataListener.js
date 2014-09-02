@@ -26,12 +26,13 @@ function init() {
   })
 
   pageMod.PageMod({
-    include: "*.alts.io/search",
+    include: "http://alts.io/search",
     contentScriptFile: data.url("searchFromSite.js"),
     //contentScriptWhen: "start",
     onAttach: function(worker) {
       worker.port.on("search", function(query) {
         search.getQueryData(query, function() { sidebar.show() })
+        console.log('searched')
       })
     }
   })
