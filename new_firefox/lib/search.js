@@ -34,20 +34,22 @@ function getQueryData(query, callback) {
 
 
 function getUID() {
-  var req = Request({
-    url : token_url,
-    onComplete: function (response) {
-      if (response.status == 200) {
-        ss.storage.uid = JSON.parse(response.text).token;
-        analytics.sendEvent('Token Created', {})
-      } else {
-        window.setTimeout(function() {
-          getUID()
-        }, timeout);
-        timeout = timeout * 2;
+  if (!ss.storage.uid) {  
+    var req = Request({
+      url : token_url,
+      onComplete: function (response) {
+        if (response.status == 200 ) {
+          ss.storage.uid = JSON.parse(response.text).token;
+          analytics.sendEvent('Token Created', {})
+        } else {
+          window.setTimeout(function() {
+            getUID()
+          }, timeout);
+          timeout = timeout * 2;
+        }
       }
-    }
-  }).get();
+    }).get();
+  }
 }
 
 
